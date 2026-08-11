@@ -32,6 +32,7 @@ import {
 } from "@/data/useCommunityStore";
 import { useLikedPostsStore } from "@/data/useLikedPostsStore";
 import type { School } from "@/data/schools";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/school/$schoolId")({
   loader: async ({ params }) => {
@@ -317,6 +318,7 @@ function SchoolPage() {
 
   const handleTabClick = (t: (typeof tabs)[number]) => {
     if (t === "Community" && !isSubscribed) {
+      toast.info("You must pay to use the community");
       navigate({ to: "/prime" });
       return;
     }

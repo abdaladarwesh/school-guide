@@ -133,36 +133,38 @@ function HomePage() {
   return (
     <AppShell>
       <div className="space-y-6 px-4 py-5">
-        <section className="rounded-3xl bg-[image:var(--gradient-hero)] p-5 text-primary-foreground shadow-[var(--shadow-float)]">
-          <div className="flex items-center gap-3">
-            <span className="grid size-11 place-items-center rounded-2xl bg-white/15 text-2xl">
-              <Flame className="size-6 text-or" />
-            </span>
-            <div>
-              <h1 className="font-display text-2xl font-extrabold">{currentStreak}-Day Streak!</h1>
-              <p className="text-xs text-primary-foreground/80">
-                You have <strong>{points} points</strong>
-              </p>
+        {session && (
+          <section className="rounded-3xl bg-[image:var(--gradient-hero)] p-5 text-primary-foreground shadow-[var(--shadow-float)]">
+            <div className="flex items-center gap-3">
+              <span className="grid size-11 place-items-center rounded-2xl bg-white/15 text-2xl">
+                <Flame className="size-6 text-or" />
+              </span>
+              <div>
+                <h1 className="font-display text-2xl font-extrabold">{currentStreak}-Day Streak!</h1>
+                <p className="text-xs text-primary-foreground/80">
+                  You have <strong>{points} points</strong>
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="mt-4 flex gap-1.5">
-            {Array.from({ length: 7 }).map((_, i) => {
-              const progress = currentStreak === 0 ? 0 : (currentStreak % 7 === 0 ? 7 : currentStreak % 7);
-              return (
-                <span
-                  key={i}
-                  className={`h-1.5 flex-1 rounded-full ${i < progress ? "bg-or" : "bg-white/25"}`}
-                />
-              );
-            })}
-          </div>
-          <Link
-            to="/streaks"
-            className="mt-4 inline-flex items-center gap-1 rounded-full bg-or px-4 py-2 text-sm font-bold text-accent-foreground"
-          >
-            Check in <ArrowRight className="size-4" />
-          </Link>
-        </section>
+            <div className="mt-4 flex gap-1.5">
+              {Array.from({ length: 7 }).map((_, i) => {
+                const progress = currentStreak === 0 ? 0 : (currentStreak % 7 === 0 ? 7 : currentStreak % 7);
+                return (
+                  <span
+                    key={i}
+                    className={`h-1.5 flex-1 rounded-full ${i < progress ? "bg-or" : "bg-white/25"}`}
+                  />
+                );
+              })}
+            </div>
+            <Link
+              to="/streaks"
+              className="mt-4 inline-flex items-center gap-1 rounded-full bg-or px-4 py-2 text-sm font-bold text-accent-foreground"
+            >
+              Check in <ArrowRight className="size-4" />
+            </Link>
+          </section>
+        )}
 
         <Link
           to="/search"
@@ -172,20 +174,7 @@ function HomePage() {
           <span className="text-sm">Search schools or specializations…</span>
         </Link>
 
-        <section className="overflow-hidden rounded-3xl bg-[image:var(--gradient-soft)] p-5">
-          <p className="text-xs font-extrabold uppercase tracking-widest text-framboise">
-            Admission season
-          </p>
-          <h2 className="mt-1 font-display text-xl font-extrabold text-indigo">
-            32 schools are accepting applications
-          </h2>
-          <Link
-            to="/search"
-            className="mt-3 inline-flex items-center gap-1 rounded-full bg-indigo px-4 py-2 text-sm font-bold text-primary-foreground"
-          >
-            Explore Now <ArrowRight className="size-4" />
-          </Link>
-        </section>
+
 
         <section>
           <div className="mb-3 flex items-baseline justify-between">
@@ -248,6 +237,21 @@ function HomePage() {
                 ))}
             </div>
           )}
+        </section>
+
+        <section className="overflow-hidden rounded-3xl bg-[image:var(--gradient-soft)] p-5">
+          <p className="text-xs font-extrabold uppercase tracking-widest text-framboise">
+            Admission season
+          </p>
+          <h2 className="mt-1 font-display text-xl font-extrabold text-indigo">
+            32 schools are accepting applications
+          </h2>
+          <Link
+            to="/search"
+            className="mt-3 inline-flex items-center gap-1 rounded-full bg-indigo px-4 py-2 text-sm font-bold text-primary-foreground"
+          >
+            Explore Now <ArrowRight className="size-4" />
+          </Link>
         </section>
       </div>
     </AppShell>

@@ -106,55 +106,7 @@ function SubscriptionsPage() {
         </div>
 
         {/* Plus Tier */}
-        <section className="relative rounded-3xl bg-card p-6 shadow-[var(--shadow-card)] border-2 border-indigo/10">
-          <div className="flex items-center gap-3">
-            <div className="grid size-12 place-items-center rounded-2xl bg-nuage/30 text-indigo">
-              <Users className="size-6" />
-            </div>
-            <div>
-              <h2 className="font-display text-2xl font-extrabold text-foreground">Plus</h2>
-              <p className="text-sm font-semibold text-muted-foreground">Community & Discovery</p>
-            </div>
-          </div>
 
-          <p className="mt-5 font-display text-3xl font-extrabold text-foreground">
-            EGP 49<span className="text-base font-semibold text-muted-foreground">/month</span>
-          </p>
-
-          <ul className="mt-6 space-y-3">
-            {plusPerks.map((p) => (
-              <li key={p} className="flex items-start gap-3 text-sm text-foreground/85">
-                <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-indigo/10 text-indigo">
-                  <Check className="size-3" strokeWidth={3} />
-                </span>
-                {p}
-              </li>
-            ))}
-          </ul>
-
-          {tier === "plus" ? (
-            <button
-              className="mt-6 w-full rounded-2xl bg-secondary py-3.5 font-display text-lg font-extrabold text-secondary-foreground"
-              disabled
-            >
-              Current Plan
-            </button>
-          ) : tier === "max" ? (
-            <button
-              className="mt-6 w-full rounded-2xl bg-secondary py-3.5 font-display text-lg font-extrabold text-secondary-foreground"
-              disabled
-            >
-              Included in Max
-            </button>
-          ) : (
-            <button
-              onClick={() => handleSubscribe("plus")}
-              className="mt-6 w-full rounded-2xl bg-indigo/10 py-3.5 font-display text-lg font-extrabold text-indigo transition-colors hover:bg-indigo hover:text-primary-foreground"
-            >
-              Get Plus
-            </button>
-          )}
-        </section>
 
         {/* Max Tier */}
         <section className="relative rounded-3xl bg-[image:var(--gradient-hero)] p-6 text-primary-foreground shadow-[var(--shadow-float)]">
@@ -202,6 +154,56 @@ function SubscriptionsPage() {
               className="mt-6 w-full rounded-2xl bg-or py-3.5 font-display text-lg font-extrabold text-accent-foreground shadow-lg transition-transform active:scale-95"
             >
               {tier === "plus" ? "Upgrade to Max" : "Go Max"}
+            </button>
+          )}
+        </section>
+
+        <section className="relative rounded-3xl bg-card p-6 shadow-[var(--shadow-card)] border-2 border-indigo/10">
+          <div className="flex items-center gap-3">
+            <div className="grid size-12 place-items-center rounded-2xl bg-nuage/30 text-indigo">
+              <Users className="size-6" />
+            </div>
+            <div>
+              <h2 className="font-display text-2xl font-extrabold text-foreground">Plus</h2>
+              <p className="text-sm font-semibold text-muted-foreground">Community & Discovery</p>
+            </div>
+          </div>
+
+          <p className="mt-5 font-display text-3xl font-extrabold text-foreground">
+            EGP 49<span className="text-base font-semibold text-muted-foreground">/month</span>
+          </p>
+
+          <ul className="mt-6 space-y-3">
+            {plusPerks.map((p) => (
+              <li key={p} className="flex items-start gap-3 text-sm text-foreground/85">
+                <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-indigo/10 text-indigo">
+                  <Check className="size-3" strokeWidth={3} />
+                </span>
+                {p}
+              </li>
+            ))}
+          </ul>
+
+          {tier === "plus" ? (
+            <button
+              className="mt-6 w-full rounded-2xl bg-secondary py-3.5 font-display text-lg font-extrabold text-secondary-foreground"
+              disabled
+            >
+              Current Plan
+            </button>
+          ) : tier === "max" ? (
+            <button
+              className="mt-6 w-full rounded-2xl bg-secondary py-3.5 font-display text-lg font-extrabold text-secondary-foreground"
+              disabled
+            >
+              Included in Max
+            </button>
+          ) : (
+            <button
+              onClick={() => handleSubscribe("plus")}
+              className="mt-6 w-full rounded-2xl bg-indigo/10 py-3.5 font-display text-lg font-extrabold text-indigo transition-colors hover:bg-indigo hover:text-primary-foreground"
+            >
+              Get Plus
             </button>
           )}
         </section>
