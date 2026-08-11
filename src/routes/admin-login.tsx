@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { supabase } from "@/lib/supabase";
+import { adminSupabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -21,7 +21,7 @@ function AdminLogin() {
     setLoading(true);
     setError(null);
 
-    const { error: signInError, data } = await supabase.auth.signInWithPassword({
+    const { error: signInError, data } = await adminSupabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -34,7 +34,7 @@ function AdminLogin() {
 
     if (data?.user) {
       // Verify role
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile, error: profileError } = await adminSupabase
         .from("profiles")
         .select("role")
         .eq("id", data.user.id)
@@ -42,7 +42,7 @@ function AdminLogin() {
 
       if (profileError || profile?.role !== "admin") {
         setError("Access denied. Administrator privileges required.");
-        await supabase.auth.signOut();
+        await adminSupabase.auth.signOut();
         setLoading(false);
         return;
       }

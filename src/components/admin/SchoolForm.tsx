@@ -15,7 +15,10 @@ import {
 } from "@/components/ui/form";
 import type { School } from "@/data/schools";
 import { Plus, Trash2, Upload } from "lucide-react";
-import { useState, useRef } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useFieldsOfStudyStore } from "@/data/useFieldsOfStudyStore";
+import { useCitiesStore } from "@/data/useCitiesStore";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 
 const schoolSchema = z.object({
@@ -23,6 +26,7 @@ const schoolSchema = z.object({
   name: z.string().min(1, "Name is required"),
   city: z.string().min(1, "City is required"),
   location: z.string().min(1, "Location is required"),
+  main_field_of_study: z.string().optional(),
   image: z.string(),
   logo: z.string().optional(),
   gallery: z.array(z.string()).optional(),
@@ -77,6 +81,47 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
   const [selectedGalleryFiles, setSelectedGalleryFiles] = useState<File[]>([]);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
+  const { fields, fetchFields, addField } = useFieldsOfStudyStore();
+  const [newField, setNewField] = useState("");
+  const [isAddingField, setIsAddingField] = useState(false);
+
+  const { cities, fetchCities, addCity } = useCitiesStore();
+  const [newCity, setNewCity] = useState("");
+  const [isAddingCity, setIsAddingCity] = useState(false);
+
+  useEffect(() => {
+    fetchFields();
+    fetchCities();
+  }, [fetchFields, fetchCities]);
+
+  const handleAddField = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!newField.trim()) return;
+    try {
+      const added = await addField(newField.trim());
+      form.setValue("main_field_of_study", added.name);
+      setNewField("");
+      setIsAddingField(false);
+      toast.success("Field of study added successfully");
+    } catch (e) {
+      toast.error("Failed to add field of study");
+    }
+  };
+
+  const handleAddCity = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!newCity.trim()) return;
+    try {
+      const added = await addCity(newCity.trim());
+      form.setValue("city", added.name);
+      setNewCity("");
+      setIsAddingCity(false);
+      toast.success("City added successfully");
+    } catch (e) {
+      toast.error("Failed to add city");
+    }
+  };
+
   const form = useForm<SchoolFormValues>({
     resolver: zodResolver(schoolSchema) as any,
     defaultValues: initialData || {
@@ -84,6 +129,7 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
       name: "",
       city: "",
       location: "",
+      main_field_of_study: "",
       image: "",
       logo: "",
       gallery: [],
@@ -222,11 +268,45 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
             control={form.control}
             name="city"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col">
                 <FormLabel>City</FormLabel>
-                <FormControl>
-                  <Input placeholder="City" {...field} />
-                </FormControl>
+                <div className="flex items-center gap-2">
+                  {isAddingCity ? (
+                    <div className="flex flex-1 items-center gap-2">
+                      <Input
+                        placeholder="New city name..."
+                        value={newCity}
+                        onChange={(e) => setNewCity(e.target.value)}
+                      />
+                      <Button type="button" onClick={handleAddCity} size="sm">
+                        Add
+                      </Button>
+                      <Button type="button" variant="ghost" onClick={() => setIsAddingCity(false)} size="sm">
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-1 items-center gap-2">
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a city" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {cities.map((c) => (
+                            <SelectItem key={c.id} value={c.name}>
+                              {c.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button type="button" variant="outline" onClick={() => setIsAddingCity(true)}>
+                        <Plus className="size-4 mr-2" /> Add New
+                      </Button>
+                    </div>
+                  )}
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -244,6 +324,56 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
               </FormItem>
             )}
           />
+
+          <div className="col-span-full">
+            <FormField
+              control={form.control}
+              name="main_field_of_study"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Main Field of Study</FormLabel>
+                  <div className="flex items-center gap-2">
+                    {isAddingField ? (
+                      <div className="flex flex-1 items-center gap-2">
+                        <Input
+                          placeholder="New field name..."
+                          value={newField}
+                          onChange={(e) => setNewField(e.target.value)}
+                        />
+                        <Button type="button" onClick={handleAddField} size="sm">
+                          Add
+                        </Button>
+                        <Button type="button" variant="ghost" onClick={() => setIsAddingField(false)} size="sm">
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-1 items-center gap-2">
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a field of study" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {fields.map((f) => (
+                              <SelectItem key={f.id} value={f.name}>
+                                {f.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button type="button" variant="outline" onClick={() => setIsAddingField(true)}>
+                          <Plus className="size-4 mr-2" /> Add New
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           <div className="col-span-full space-y-6">
             <FormField

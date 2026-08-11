@@ -8,6 +8,8 @@ interface UserState {
   tier: "none" | "plus" | "max";
   session: Session | null;
   role: "student" | "admin" | null;
+  adminSession: Session | null;
+  adminRole: "student" | "admin" | null;
   hasCompletedOnboarding: boolean;
   currentStreak: number;
   points: number;
@@ -15,6 +17,7 @@ interface UserState {
   schoolId: string | null;
   setSubscribed: (val: boolean, tier?: "none" | "plus" | "max") => void;
   setSession: (session: Session | null, role?: "student" | "admin" | null) => void;
+  setAdminSession: (session: Session | null, role?: "student" | "admin" | null) => void;
   setUserData: (data: {
     current_streak?: number;
     points?: number;
@@ -23,6 +26,7 @@ interface UserState {
   }) => void;
   setOnboardingCompleted: () => void;
   logout: () => Promise<void>;
+  adminLogout: () => Promise<void>;
 }
 
 export const useUserStore = create<UserState>()(
@@ -32,6 +36,8 @@ export const useUserStore = create<UserState>()(
       tier: "none",
       session: null,
       role: null,
+      adminSession: null,
+      adminRole: null,
       hasCompletedOnboarding: false,
       currentStreak: 0,
       points: 0,
@@ -39,6 +45,7 @@ export const useUserStore = create<UserState>()(
       schoolId: null,
       setSubscribed: (val, tier = "none") => set({ isSubscribed: val, tier }),
       setSession: (session, role = null) => set({ session, role }),
+      setAdminSession: (adminSession, adminRole = null) => set({ adminSession, adminRole }),
       setUserData: (data) =>
         set((state) => ({
           currentStreak: data.current_streak ?? state.currentStreak,
@@ -48,8 +55,14 @@ export const useUserStore = create<UserState>()(
         })),
       setOnboardingCompleted: () => set({ hasCompletedOnboarding: true }),
       logout: async () => {
+        const { supabase } = await import("@/lib/supabase");
         await supabase.auth.signOut();
         set({ session: null, role: null });
+      },
+      adminLogout: async () => {
+        const { adminSupabase } = await import("@/lib/supabase");
+        await adminSupabase.auth.signOut();
+        set({ adminSession: null, adminRole: null });
       },
     }),
     {

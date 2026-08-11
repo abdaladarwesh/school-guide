@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { schools as initialSchools, type School } from "./schools";
-import { supabase } from "@/lib/supabase";
+import { supabase, adminSupabase } from "@/lib/supabase";
 
 interface SchoolsState {
   schools: School[];
@@ -28,7 +28,7 @@ const uploadFile = async (file: File, folder: string) => {
   const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
   const filePath = `${folder}/${fileName}`;
 
-  const { error: uploadError } = await supabase.storage
+  const { error: uploadError } = await adminSupabase.storage
     .from("school-images")
     .upload(filePath, file);
 
@@ -37,7 +37,7 @@ const uploadFile = async (file: File, folder: string) => {
     throw uploadError;
   }
 
-  const { data: publicUrlData } = supabase.storage.from("school-images").getPublicUrl(filePath);
+  const { data: publicUrlData } = adminSupabase.storage.from("school-images").getPublicUrl(filePath);
 
   return publicUrlData.publicUrl;
 };
@@ -73,7 +73,7 @@ export const useSchoolsStore = create<SchoolsState>()(
             gallery: galleryUrls,
           };
 
-          const { error } = await supabase.from("schools").insert(schoolToInsert);
+          const { error } = await adminSupabase.from("schools").insert(schoolToInsert);
 
           if (error) {
             console.error("Error inserting school:", error);
@@ -115,7 +115,7 @@ export const useSchoolsStore = create<SchoolsState>()(
             gallery: galleryUrls,
           };
 
-          const { error } = await supabase.from("schools").update(schoolToUpdate).eq("id", id);
+          const { error } = await adminSupabase.from("schools").update(schoolToUpdate).eq("id", id);
 
           if (error) {
             console.error("Error updating school:", error);
@@ -142,7 +142,7 @@ export const useSchoolsStore = create<SchoolsState>()(
       deleteSchool: async (id) => {
         set({ isLoading: true });
         try {
-          const { error } = await supabase.from("schools").delete().eq("id", id);
+          const { error } = await adminSupabase.from("schools").delete().eq("id", id);
           if (error) {
             console.error("Error deleting school:", error);
             throw error;

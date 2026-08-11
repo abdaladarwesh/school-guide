@@ -21,6 +21,7 @@ export type School = {
   admission: { minGrade: string; background: string; age: string; interview: string };
   logo?: string;
   gallery?: string[];
+  main_field_of_study?: string;
 };
 
 export const schools: School[] = [

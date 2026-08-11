@@ -8,3 +8,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export const adminSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storageKey: "admin-supabase-auth",
+  },
+});

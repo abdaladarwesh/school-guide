@@ -444,7 +444,12 @@ function SchoolPage() {
           )}
           <div>
             <h1 className="font-display text-2xl font-extrabold">{school.name}</h1>
-            <p className="flex items-center gap-1 text-xs text-primary-foreground/85">
+            {school.main_field_of_study && (
+              <p className="text-sm font-semibold text-primary-foreground/90 mt-0.5">
+                {school.main_field_of_study}
+              </p>
+            )}
+            <p className="flex items-center gap-1 text-xs text-primary-foreground/85 mt-1">
               <MapPin className="size-3.5" /> {school.location}
             </p>
           </div>

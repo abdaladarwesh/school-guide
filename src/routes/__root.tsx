@@ -9,7 +9,7 @@ import {
   redirect,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, adminSupabase } from "@/lib/supabase";
 import { useUserStore } from "@/data/useUserStore";
 import { useSchoolsStore } from "@/data/useSchoolsStore";
 import { Toaster } from "@/components/ui/sonner";
@@ -167,6 +167,9 @@ function RootComponent() {
   useEffect(() => {
     fetchSchools();
 
+    const setSession = useUserStore.getState().setSession;
+    const setAdminSession = useUserStore.getState().setAdminSession;
+
     const fetchRoleAndSetSession = async (session: any) => {
       if (session?.user) {
         const { data, error } = await supabase
@@ -215,8 +218,37 @@ function RootComponent() {
       fetchRoleAndSetSession(session);
     });
 
-    return () => subscription.unsubscribe();
-  }, [setSession, fetchSchools]);
+    const fetchAdminRoleAndSetSession = async (session: any) => {
+      if (session?.user) {
+        const { data, error } = await adminSupabase
+          .from("profiles")
+          .select("role")
+          .eq("id", session.user.id)
+          .single();
+
+        if (!error && data && data.role === "admin") {
+          setAdminSession(session, data.role);
+          return;
+        }
+      }
+      setAdminSession(session, null);
+    };
+
+    adminSupabase.auth.getSession().then(({ data: { session } }) => {
+      fetchAdminRoleAndSetSession(session);
+    });
+
+    const {
+      data: { subscription: adminSubscription },
+    } = adminSupabase.auth.onAuthStateChange((_event, session) => {
+      fetchAdminRoleAndSetSession(session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      adminSubscription.unsubscribe();
+    };
+  }, [fetchSchools]);
 
   return (
     <QueryClientProvider client={queryClient}>

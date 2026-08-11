@@ -4,7 +4,7 @@ import { useUserStore } from "@/data/useUserStore";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: () => {
-    const role = useUserStore.getState().role;
+    const role = useUserStore.getState().adminRole;
     if (role !== "admin") {
       throw redirect({
         to: "/admin-login",
