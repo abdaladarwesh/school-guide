@@ -5,7 +5,7 @@ import { Flame, Trophy, Lock, Loader2, Info } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useUserStore } from "@/data/useUserStore";
 import { supabase } from "@/lib/supabase";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export const Route = createFileRoute("/streaks")({
   head: () => ({
@@ -70,13 +70,28 @@ function StreaksPage() {
 
   return (
     <AppShell>
-      <div className="space-y-6 px-4 py-5">
-        <section
-          className={`relative overflow-hidden rounded-3xl p-6 text-center shadow-[var(--shadow-float)] transition-colors ${
-            isSubscribed
-              ? "bg-[image:var(--gradient-warm)] text-accent-foreground"
-              : "bg-card text-muted-foreground border-2 border-border"
-          }`}
+      <div className="relative">
+        {!session && (
+          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-background/80 backdrop-blur-md px-6 pb-32">
+            <div className="mb-4 grid size-16 place-items-center rounded-3xl bg-card shadow-[var(--shadow-card)]">
+              <Lock className="size-8 text-foreground/60" />
+            </div>
+            <p className="font-display text-2xl font-extrabold text-foreground">Sign In Required</p>
+            <p className="mt-2 text-center text-sm font-semibold text-muted-foreground">
+              Unlock your streaks, badges, and leaderboard by creating an account.
+            </p>
+            <Link to="/profile" className="mt-6 rounded-full bg-indigo px-8 py-3.5 text-sm font-bold text-primary-foreground shadow-lg">
+              Sign In to Continue
+            </Link>
+          </div>
+        )}
+        <div className={`space-y-6 px-4 py-5 ${!session ? "pointer-events-none select-none h-[calc(100vh-100px)] overflow-hidden" : ""}`}>
+          <section
+            className={`relative overflow-hidden rounded-3xl p-6 text-center shadow-[var(--shadow-float)] transition-colors ${
+              isSubscribed
+                ? "bg-[image:var(--gradient-warm)] text-accent-foreground"
+                : "bg-card text-muted-foreground border-2 border-border"
+            }`}
         >
           {!isSubscribed && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/70 backdrop-blur-md p-4">
@@ -126,12 +141,11 @@ function StreaksPage() {
         <section>
           <h2 className="mb-3 font-display text-xl font-extrabold text-foreground">Badges</h2>
           <div className="grid grid-cols-3 gap-3">
-            <TooltipProvider>
               {displayBadges.map((b) => (
-                <Tooltip key={b.id} delayDuration={300}>
-                  <TooltipTrigger asChild>
+                <Popover key={b.id}>
+                  <PopoverTrigger asChild>
                     <div
-                      className={`relative cursor-help rounded-2xl p-3 text-center transition-all ${
+                      className={`relative cursor-pointer rounded-2xl p-3 text-center transition-all ${
                         b.unlocked
                           ? b.is_premium
                             ? "bg-[image:var(--gradient-warm)] text-accent-foreground shadow-lg"
@@ -149,13 +163,12 @@ function StreaksPage() {
                         {b.name}
                       </p>
                     </div>
-                  </TooltipTrigger>
-                  <TooltipContent sideOffset={5}>
+                  </PopoverTrigger>
+                  <PopoverContent sideOffset={5} className="w-auto p-3 bg-card border-border shadow-lg">
                     <p className="max-w-[150px] text-center text-xs">{b.description}</p>
-                  </TooltipContent>
-                </Tooltip>
+                  </PopoverContent>
+                </Popover>
               ))}
-            </TooltipProvider>
           </div>
         </section>
 
@@ -164,51 +177,52 @@ function StreaksPage() {
             <Trophy className="size-5 text-or" /> Leaderboard
           </h2>
           <div className="overflow-hidden rounded-3xl bg-card shadow-[var(--shadow-card)]">
-            {!schoolId ? (
-              <div className="p-6 text-center text-sm font-semibold text-muted-foreground">
-                Join a school in your profile to see the leaderboard!
-              </div>
-            ) : isLeaderboardLoading ? (
-              <div className="flex justify-center p-6">
-                <Loader2 className="size-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : realLeaderboard.length === 0 ? (
-              <div className="p-6 text-center text-sm font-semibold text-muted-foreground">
-                No users found on this leaderboard yet.
-              </div>
-            ) : (
-              realLeaderboard.map((u, i) => {
-                const isMe = u.id === session?.user.id;
-                const hasPremium = u.is_subscribed && (u.tier === "plus" || u.tier === "max");
+              {!schoolId ? (
+                <div className="p-6 text-center text-sm font-semibold text-muted-foreground">
+                  Join a school in your profile to see the leaderboard!
+                </div>
+              ) : isLeaderboardLoading ? (
+                <div className="flex justify-center p-6">
+                  <Loader2 className="size-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : realLeaderboard.length === 0 ? (
+                <div className="p-6 text-center text-sm font-semibold text-muted-foreground">
+                  No users found on this leaderboard yet.
+                </div>
+              ) : (
+                realLeaderboard.map((u, i) => {
+                  const isMe = u.id === session?.user.id;
+                  const hasPremium = u.is_subscribed && (u.tier === "plus" || u.tier === "max");
 
-                return (
-                  <div
-                    key={u.id}
-                    className={`flex items-center gap-3 border-b border-border px-4 py-3 last:border-0 ${
-                      isMe ? "bg-nuage/25" : ""
-                    }`}
-                  >
-                    <span className="font-display text-sm font-extrabold text-muted-foreground">
-                      {i + 1}
-                    </span>
-                    <span className="flex-1 text-sm font-semibold text-foreground">
-                      {isMe
-                        ? "You"
-                        : `${u.first_name || "Anonymous"} ${u.last_name ? u.last_name[0] + "." : ""}`}{" "}
-                      {hasPremium && (
-                        <span className="ml-1 text-xs">{u.tier === "max" ? "💎" : "✨"}</span>
-                      )}
-                    </span>
-                    <span className="text-sm font-bold text-framboise">
-                      {u.current_streak}{" "}
-                      <span className="text-[10px] text-muted-foreground">days</span>
-                    </span>
-                  </div>
-                );
-              })
-            )}
+                  return (
+                    <div
+                      key={u.id}
+                      className={`flex items-center gap-3 border-b border-border px-4 py-3 last:border-0 ${
+                        isMe ? "bg-nuage/25" : ""
+                      }`}
+                    >
+                      <span className="font-display text-sm font-extrabold text-muted-foreground">
+                        {i + 1}
+                      </span>
+                      <span className="flex-1 text-sm font-semibold text-foreground">
+                        {isMe
+                          ? "You"
+                          : `${u.first_name || "Anonymous"} ${u.last_name ? u.last_name[0] + "." : ""}`}{" "}
+                        {hasPremium && (
+                          <span className="ml-1 text-xs">{u.tier === "max" ? "💎" : "✨"}</span>
+                        )}
+                      </span>
+                      <span className="text-sm font-bold text-framboise">
+                        {u.current_streak}{" "}
+                        <span className="text-[10px] text-muted-foreground">days</span>
+                      </span>
+                    </div>
+                  );
+                })
+              )}
           </div>
         </section>
+        </div>
       </div>
     </AppShell>
   );
