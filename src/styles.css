@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "placeholder-loading/dist/css/placeholder-loading.min.css";
 
 @custom-variant dark (&:is(.dark *));
 

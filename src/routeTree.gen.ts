@@ -11,9 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrimeRouteImport } from './routes/prime'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as StreaksRouteImport } from './routes/streaks'
 import { Route as SchoolSchoolIdRouteImport } from './routes/school.$schoolId'
@@ -31,6 +33,11 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin-login',
+  path: '/admin-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -44,6 +51,11 @@ const LoginRoute = LoginRouteImport.update({
 const PrimeRoute = PrimeRouteImport.update({
   id: '/prime',
   path: '/prime',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -81,9 +93,11 @@ const AdminSchoolsSchoolIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/prime': typeof PrimeRoute
+  '/profile': typeof ProfileRoute
   '/search': typeof SearchRoute
   '/streaks': typeof StreaksRoute
   '/school/$schoolId': typeof SchoolSchoolIdRoute
@@ -94,9 +108,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/prime': typeof PrimeRoute
+  '/profile': typeof ProfileRoute
   '/search': typeof SearchRoute
   '/streaks': typeof StreaksRoute
   '/school/$schoolId': typeof SchoolSchoolIdRoute
@@ -108,9 +124,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/prime': typeof PrimeRoute
+  '/profile': typeof ProfileRoute
   '/search': typeof SearchRoute
   '/streaks': typeof StreaksRoute
   '/school/$schoolId': typeof SchoolSchoolIdRoute
@@ -123,9 +141,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/admin-login'
     | '/home'
     | '/login'
     | '/prime'
+    | '/profile'
     | '/search'
     | '/streaks'
     | '/school/$schoolId'
@@ -136,9 +156,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/admin-login'
     | '/home'
     | '/login'
     | '/prime'
+    | '/profile'
     | '/search'
     | '/streaks'
     | '/school/$schoolId'
@@ -149,9 +171,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/admin-login'
     | '/home'
     | '/login'
     | '/prime'
+    | '/profile'
     | '/search'
     | '/streaks'
     | '/school/$schoolId'
@@ -163,9 +187,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   PrimeRoute: typeof PrimeRoute
+  ProfileRoute: typeof ProfileRoute
   SearchRoute: typeof SearchRoute
   StreaksRoute: typeof StreaksRoute
   SchoolSchoolIdRoute: typeof SchoolSchoolIdRoute
@@ -187,6 +213,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-login': {
+      id: '/admin-login'
+      path: '/admin-login'
+      fullPath: '/admin-login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home': {
       id: '/home'
       path: '/home'
@@ -206,6 +239,13 @@ declare module '@tanstack/react-router' {
       path: '/prime'
       fullPath: '/prime'
       preLoaderRoute: typeof PrimeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -270,9 +310,11 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   PrimeRoute: PrimeRoute,
+  ProfileRoute: ProfileRoute,
   SearchRoute: SearchRoute,
   StreaksRoute: StreaksRoute,
   SchoolSchoolIdRoute: SchoolSchoolIdRoute,

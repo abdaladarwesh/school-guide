@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Crown, Check, Sparkles, Users, AlertTriangle, X } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useUserStore } from "@/data/useUserStore";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/prime")({
   head: () => ({
@@ -14,7 +16,10 @@ export const Route = createFileRoute("/prime")({
           "Unlock Plus for communities and enhanced search, or Max for an AI advisor and mentor sessions.",
       },
       { property: "og:title", content: "Subscriptions — School Guide" },
-      { property: "og:description", content: "Choose the right plan to boost your education journey." },
+      {
+        property: "og:description",
+        content: "Choose the right plan to boost your education journey.",
+      },
     ],
   }),
   component: SubscriptionsPage,
@@ -36,23 +41,63 @@ const maxPerks = [
 
 function SubscriptionsPage() {
   const navigate = useNavigate();
-  const { tier, setSubscribed } = useUserStore();
+  const { tier, setSubscribed, session } = useUserStore();
   const [cancelStep, setCancelStep] = useState(0);
 
-  const handleSubscribe = (selectedTier: 'plus' | 'max') => {
+  const handleSubscribe = async (selectedTier: "plus" | "max") => {
+    if (!session?.user) {
+      toast.error("You must have an account first");
+      navigate({ to: "/login" });
+      return;
+    }
+
     setSubscribed(true, selectedTier);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ tier: selectedTier, is_subscribed: true })
+      .eq("id", session.user.id);
+    if (error) {
+      console.error("Error updating subscription:", error.message);
+    } else {
+      if (selectedTier === "plus" || selectedTier === "max") {
+        await supabase.rpc("grant_badge", { badge_id: "plus_member" });
+      }
+      if (selectedTier === "max") {
+        await supabase.rpc("grant_badge", { badge_id: "max_member" });
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("current_streak, points, unlocked_badges")
+        .eq("id", session.user.id)
+        .single();
+      if (profile) {
+        useUserStore.getState().setUserData({
+          current_streak: profile.current_streak,
+          points: profile.points,
+          unlocked_badges: profile.unlocked_badges,
+        });
+      }
+    }
+
     navigate({ to: "/search" });
   };
 
-  const handleUnsubscribe = () => {
-    setSubscribed(false, 'none');
+  const handleUnsubscribe = async () => {
+    setSubscribed(false, "none");
+    if (session?.user) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ tier: "none", is_subscribed: false })
+        .eq("id", session.user.id);
+      if (error) console.error("Error updating subscription:", error.message);
+    }
     setCancelStep(0);
   };
 
   return (
     <AppShell>
       <div className="space-y-8 px-4 py-6 pb-24">
-        
         <div className="text-center">
           <h1 className="font-display text-3xl font-extrabold text-foreground">Choose Your Plan</h1>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -71,7 +116,7 @@ function SubscriptionsPage() {
               <p className="text-sm font-semibold text-muted-foreground">Community & Discovery</p>
             </div>
           </div>
-          
+
           <p className="mt-5 font-display text-3xl font-extrabold text-foreground">
             EGP 49<span className="text-base font-semibold text-muted-foreground">/month</span>
           </p>
@@ -87,16 +132,25 @@ function SubscriptionsPage() {
             ))}
           </ul>
 
-          {tier === 'plus' ? (
-            <button className="mt-6 w-full rounded-2xl bg-secondary py-3.5 font-display text-lg font-extrabold text-secondary-foreground" disabled>
+          {tier === "plus" ? (
+            <button
+              className="mt-6 w-full rounded-2xl bg-secondary py-3.5 font-display text-lg font-extrabold text-secondary-foreground"
+              disabled
+            >
               Current Plan
             </button>
-          ) : tier === 'max' ? (
-            <button className="mt-6 w-full rounded-2xl bg-secondary py-3.5 font-display text-lg font-extrabold text-secondary-foreground" disabled>
+          ) : tier === "max" ? (
+            <button
+              className="mt-6 w-full rounded-2xl bg-secondary py-3.5 font-display text-lg font-extrabold text-secondary-foreground"
+              disabled
+            >
               Included in Max
             </button>
           ) : (
-            <button onClick={() => handleSubscribe('plus')} className="mt-6 w-full rounded-2xl bg-indigo/10 py-3.5 font-display text-lg font-extrabold text-indigo transition-colors hover:bg-indigo hover:text-primary-foreground">
+            <button
+              onClick={() => handleSubscribe("plus")}
+              className="mt-6 w-full rounded-2xl bg-indigo/10 py-3.5 font-display text-lg font-extrabold text-indigo transition-colors hover:bg-indigo hover:text-primary-foreground"
+            >
               Get Plus
             </button>
           )}
@@ -107,17 +161,19 @@ function SubscriptionsPage() {
           <div className="absolute -top-4 right-4 rounded-full bg-[image:var(--gradient-warm)] px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-widest text-accent-foreground shadow-lg">
             Recommended
           </div>
-          
+
           <div className="flex items-center gap-3">
             <div className="grid size-12 place-items-center rounded-2xl bg-white/20 text-or">
               <Crown className="size-6" />
             </div>
             <div>
               <h2 className="font-display text-2xl font-extrabold">Max</h2>
-              <p className="text-sm font-semibold text-primary-foreground/80">AI Advisor & Mentorship</p>
+              <p className="text-sm font-semibold text-primary-foreground/80">
+                AI Advisor & Mentorship
+              </p>
             </div>
           </div>
-          
+
           <p className="mt-5 font-display text-3xl font-extrabold">
             EGP 99<span className="text-base font-semibold">/month</span>
           </p>
@@ -133,21 +189,27 @@ function SubscriptionsPage() {
             ))}
           </ul>
 
-          {tier === 'max' ? (
-            <button className="mt-6 w-full rounded-2xl bg-white/20 py-3.5 font-display text-lg font-extrabold text-primary-foreground" disabled>
+          {tier === "max" ? (
+            <button
+              className="mt-6 w-full rounded-2xl bg-white/20 py-3.5 font-display text-lg font-extrabold text-primary-foreground"
+              disabled
+            >
               Current Plan
             </button>
           ) : (
-            <button onClick={() => handleSubscribe('max')} className="mt-6 w-full rounded-2xl bg-or py-3.5 font-display text-lg font-extrabold text-accent-foreground shadow-lg transition-transform active:scale-95">
-              {tier === 'plus' ? 'Upgrade to Max' : 'Go Max'}
+            <button
+              onClick={() => handleSubscribe("max")}
+              className="mt-6 w-full rounded-2xl bg-or py-3.5 font-display text-lg font-extrabold text-accent-foreground shadow-lg transition-transform active:scale-95"
+            >
+              {tier === "plus" ? "Upgrade to Max" : "Go Max"}
             </button>
           )}
         </section>
 
-        {tier !== 'none' && (
+        {tier !== "none" && (
           <div className="pt-8 text-center">
-            <button 
-              onClick={() => setCancelStep(1)} 
+            <button
+              onClick={() => setCancelStep(1)}
               className="text-sm font-bold text-muted-foreground hover:text-foreground underline decoration-muted-foreground/30 underline-offset-4"
             >
               Cancel my subscription
@@ -162,14 +224,14 @@ function SubscriptionsPage() {
             <div className="mx-auto mb-4 grid size-14 place-items-center rounded-full bg-destructive/10 text-destructive shadow-[0_0_20px_rgba(255,0,0,0.3)]">
               <AlertTriangle className="size-8" />
             </div>
-            
+
             <h2 className="text-center font-display text-2xl font-extrabold text-destructive">
               Danger: Cancel Subscription?
             </h2>
-            
+
             <p className="mt-4 text-center text-sm font-semibold leading-relaxed text-foreground/90">
-              This is a <strong className="text-destructive">critical action</strong>. 
-              You will immediately lose all premium benefits, AI advisor access, and exclusive communities.
+              This is a <strong className="text-destructive">critical action</strong>. You will
+              immediately lose all premium benefits, AI advisor access, and exclusive communities.
             </p>
             <p className="mt-2 text-center text-xs text-muted-foreground">
               Are you absolutely sure you want to throw away your progress?
@@ -182,7 +244,7 @@ function SubscriptionsPage() {
               >
                 No, keep my benefits
               </button>
-              
+
               <button
                 onClick={handleUnsubscribe}
                 className="w-full py-2 text-xs font-bold uppercase tracking-widest text-destructive hover:text-destructive/80"

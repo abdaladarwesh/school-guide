@@ -1,15 +1,24 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { useUserStore } from "@/data/useUserStore";
 
-export const Route = createFileRoute('/admin')({
+export const Route = createFileRoute("/admin")({
+  beforeLoad: () => {
+    const role = useUserStore.getState().role;
+    if (role !== "admin") {
+      throw redirect({
+        to: "/admin-login",
+      });
+    }
+  },
   component: AdminLayout,
 });
 
 function AdminLayout() {
   return (
-    <div className="flex min-h-screen bg-slate-50 font-sans">
+    <div className="flex flex-col md:flex-row min-h-screen bg-slate-50 font-sans">
       <AdminSidebar />
-      <main className="flex-1 ml-64 p-8">
+      <main className="flex-1 md:ml-64 p-4 md:p-8 w-full max-w-full overflow-x-hidden flex flex-col">
         <Outlet />
       </main>
     </div>

@@ -27,7 +27,11 @@ const steps = [
     art: "🎓",
     title: "Find Your Future School",
     body: "Explore 32 Applied Technology Schools across Egypt. Browse specializations, partner companies and real career outcomes.",
-    bullets: ["32 ATS schools nationwide", "Specializations & partners", "Career & salary outcomes"],
+    bullets: [
+      "32 ATS schools nationwide",
+      "Specializations & partners",
+      "Career & salary outcomes",
+    ],
     cta: "Continue",
   },
   {
@@ -84,7 +88,10 @@ function Onboarding() {
         <p className="mt-3 text-base leading-relaxed text-primary-foreground/80">{s.body}</p>
         <ul className="mt-7 space-y-3">
           {s.bullets.map((b) => (
-            <li key={b} className="flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3 text-sm font-medium">
+            <li
+              key={b}
+              className="flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3 text-sm font-medium"
+            >
               <span className="grid size-6 shrink-0 place-items-center rounded-full bg-or text-xs font-bold text-accent-foreground">
                 ✓
               </span>

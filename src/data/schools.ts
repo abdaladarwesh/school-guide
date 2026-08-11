@@ -19,6 +19,8 @@ export type School = {
   specializations: { name: string; detail: string; emoji: string }[];
   careers: { role: string; salary: string; from: string }[];
   admission: { minGrade: string; background: string; age: string; interview: string };
+  logo?: string;
+  gallery?: string[];
 };
 
 export const schools: School[] = [
@@ -77,9 +79,17 @@ export const schools: School[] = [
       { name: "Electrical Maintenance", detail: "3-year program • Field training", emoji: "🔌" },
     ],
     careers: [
-      { role: "Automation Technician", salary: "EGP 11k – 20k / mo", from: "Industrial Automation" },
+      {
+        role: "Automation Technician",
+        salary: "EGP 11k – 20k / mo",
+        from: "Industrial Automation",
+      },
       { role: "Mechatronics Engineer Asst.", salary: "EGP 12k – 22k / mo", from: "Mechatronics" },
-      { role: "Maintenance Specialist", salary: "EGP 10k – 18k / mo", from: "Electrical Maintenance" },
+      {
+        role: "Maintenance Specialist",
+        salary: "EGP 10k – 18k / mo",
+        from: "Electrical Maintenance",
+      },
     ],
     admission: {
       minGrade: "80% in preparatory certificate",

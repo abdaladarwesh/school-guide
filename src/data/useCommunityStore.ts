@@ -1,75 +1,223 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export interface Post {
   id: string;
-  author: string;
+  author_id: string;
+  profiles?: { first_name: string; last_name: string; avatar_url: string | null; age: string | null; school_id: string | null; };
   tag: string;
   time: string;
   body: string;
   likes: number;
   replies: number;
+  school_id?: string;
+  created_at?: string;
 }
 
-interface CommunityState {
-  postsBySchool: Record<string, Post[]>;
-  addPost: (schoolId: string, post: Omit<Post, 'id' | 'likes' | 'replies' | 'time'>) => void;
+export function useCommunityPosts(schoolId: string) {
+  return useQuery({
+    queryKey: ["community-posts", schoolId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("community_posts")
+        .select("*, profiles(first_name, last_name, avatar_url, age, school_id)")
+        .eq("school_id", schoolId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        toast.error("Failed to load community posts");
+        throw error;
+      }
+
+      return data as Post[];
+    },
+  });
 }
 
-export const initialPosts: Post[] = [
-  {
-    id: "1",
-    author: "Youssef A.",
-    tag: "ATS New Cairo",
-    time: "2h",
-    body: "Finished my first Valeo rotation this week — the PLC lab is nothing like the videos, way more hands-on. Ask me anything!",
-    likes: 128,
-    replies: 24,
-  },
-  {
-    id: "2",
-    author: "Mariam H.",
-    tag: "Admissions",
-    time: "5h",
-    body: "Does the 85% minimum include the practical subjects? My prep certificate is 84.6% and I'm nervous about the cutoff.",
-    likes: 61,
-    replies: 39,
-  },
-  {
-    id: "3",
-    author: "Kareem S.",
-    tag: "Careers",
-    time: "1d",
-    body: "Graduated from Alexandria Industrial in 2023, now an automation technician at 17k/month. The dual certificate really does open doors.",
-    likes: 245,
-    replies: 52,
-  },
-];
+export function useAddPost() {
+  const queryClient = useQueryClient();
 
-export const useCommunityStore = create<CommunityState>()(
-  persist(
-    (set) => ({
-      postsBySchool: {},
-      addPost: (schoolId, newPost) => set((state) => {
-        const existingPosts = state.postsBySchool[schoolId] || initialPosts;
-        const post: Post = {
-          ...newPost,
-          id: Math.random().toString(36).substring(7),
-          time: "Just now",
-          likes: 0,
-          replies: 0,
-        };
-        return {
-          postsBySchool: {
-            ...state.postsBySchool,
-            [schoolId]: [post, ...existingPosts],
-          },
-        };
-      }),
-    }),
-    {
-      name: 'community-storage',
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
-);
+  return useMutation({
+    mutationFn: async (
+      post: Omit<Post, "id" | "likes" | "replies" | "time" | "profiles"> & { school_id: string },
+    ) => {
+      const { useUserStore } = await import("@/data/useUserStore");
+      const session = useUserStore.getState().session;
+      if (!session) throw new Error("Not logged in");
+
+      const { data, error } = await supabase
+        .from("community_posts")
+        .insert({
+          ...post,
+          author_id: session.user.id,
+          time: "Just now", // Can be computed from created_at in the future, fallback for now
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+      return data;
+    },
+    onSuccess: async (data) => {
+      queryClient.invalidateQueries({ queryKey: ["community-posts", data.school_id] });
+      toast.success("Question posted successfully!");
+
+      // Record interaction for streaks
+      await supabase.rpc("record_interaction");
+
+      // Refetch user data to update UI (streak/points)
+      const { useUserStore } = await import("@/data/useUserStore");
+      const session = useUserStore.getState().session;
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("current_streak, points, unlocked_badges")
+          .eq("id", session.user.id)
+          .single();
+        if (profile) {
+          useUserStore.getState().setUserData({
+            current_streak: profile.current_streak,
+            points: profile.points,
+            unlocked_badges: profile.unlocked_badges,
+          });
+        }
+      }
+    },
+    onError: (error) => {
+      toast.error("Failed to post question: " + error.message);
+    },
+  });
+}
+
+export interface Reply {
+  id: string;
+  post_id: string;
+  parent_id?: string | null;
+  author_id: string;
+  profiles?: { first_name: string; last_name: string; avatar_url: string | null; age: string | null; school_id: string | null; };
+  body: string;
+  created_at: string;
+}
+
+export function useReplies(postId: string) {
+  return useQuery({
+    queryKey: ["community-replies", postId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("community_replies")
+        .select("*, profiles(first_name, last_name, avatar_url, age, school_id)")
+        .eq("post_id", postId)
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        throw error;
+      }
+
+      return data as Reply[];
+    },
+  });
+}
+
+export function useAddReply() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ postId, body, parentId }: { postId: string; body: string; parentId?: string | null }) => {
+      const { useUserStore } = await import("@/data/useUserStore");
+      const session = useUserStore.getState().session;
+      if (!session) throw new Error("Not logged in");
+
+      const { data, error } = await supabase
+        .from("community_replies")
+        .insert({
+          post_id: postId,
+          parent_id: parentId || null,
+          author_id: session.user.id,
+          body,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+      return data;
+    },
+    onSuccess: async (data) => {
+      queryClient.invalidateQueries({ queryKey: ["community-replies", data.post_id] });
+      // We also need to invalidate the post since its reply count increased
+      queryClient.invalidateQueries({ queryKey: ["community-posts"] });
+      toast.success("Reply posted!");
+
+      // Record interaction and grant Helper badge
+      await supabase.rpc("record_interaction");
+      await supabase.rpc("grant_badge", { badge_id: "helper" });
+
+      // Refetch user data to update UI (streak/points/badges)
+      const { useUserStore } = await import("@/data/useUserStore");
+      const session = useUserStore.getState().session;
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("current_streak, points, unlocked_badges")
+          .eq("id", session.user.id)
+          .single();
+        if (profile) {
+          useUserStore.getState().setUserData({
+            current_streak: profile.current_streak,
+            points: profile.points,
+            unlocked_badges: profile.unlocked_badges,
+          });
+        }
+      }
+    },
+    onError: (error) => {
+      toast.error("Failed to post reply: " + error.message);
+    },
+  });
+}
+
+export function useLikePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (postId: string) => {
+      const { error } = await supabase.rpc("like_community_post", { post_id: postId });
+
+      if (error) {
+        throw error;
+      }
+      return postId;
+    },
+    onSuccess: (postId) => {
+      queryClient.invalidateQueries({ queryKey: ["community-posts"] });
+    },
+    onError: (error) => {
+      toast.error("Failed to like post: " + error.message);
+    },
+  });
+}
+
+export function useUnlikePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (postId: string) => {
+      const { error } = await supabase.rpc("unlike_community_post", { post_id: postId });
+
+      if (error) {
+        throw error;
+      }
+      return postId;
+    },
+    onSuccess: (postId) => {
+      queryClient.invalidateQueries({ queryKey: ["community-posts"] });
+    },
+    onError: (error) => {
+      toast.error("Failed to unlike post: " + error.message);
+    },
+  });
+}

@@ -8,7 +8,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { tier, session, logout } = useUserStore();
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background pb-24">
+    <div className="mx-auto flex min-h-screen w-full flex-col bg-background pb-24">
       <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-border bg-card/95 px-4 py-3 backdrop-blur">
         <button aria-label="Menu" className="rounded-xl p-2 text-foreground/70 hover:bg-muted">
           <Menu className="size-5" />
@@ -20,8 +20,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="font-display text-lg font-extrabold text-indigo">School Guide</span>
         </Link>
         <div className="flex items-center gap-2">
-          
-          {tier === 'plus' && (
+          {tier === "plus" && (
             <Link
               to="/prime"
               className="flex items-center gap-1 rounded-full bg-indigo/10 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wider text-indigo"
@@ -30,7 +29,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Link>
           )}
 
-          {(tier === 'max') && (
+          {tier === "max" && (
             <Link
               to="/prime"
               className="flex items-center gap-1 rounded-full bg-[image:var(--gradient-warm)] px-2 py-1 text-[10px] font-extrabold uppercase tracking-wider text-accent-foreground"
@@ -41,14 +40,19 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {session ? (
             <div className="flex items-center gap-2">
-              <img src={session.user.user_metadata["avatar_url"]} alt="" className="grid size-8 place-items-center rounded-full bg-blush font-display text-xs font-bold text-framboise uppercase"/>
-              <button 
-                onClick={logout}
-                className="p-2 rounded-xl text-foreground/70 hover:bg-muted"
-                aria-label="Logout"
+              <Link
+                to="/profile"
+                className="rounded-full overflow-hidden border border-border hover:opacity-80 transition-opacity"
               >
-                <LogOut className="size-4" />
-              </button>
+                <img
+                  src={
+                    session.user.user_metadata?.["avatar_url"] ||
+                    `https://ui-avatars.com/api/?name=${session.user.email?.charAt(0)}&background=random`
+                  }
+                  alt="Profile"
+                  className="size-8 object-cover bg-blush font-display text-xs font-bold text-framboise uppercase"
+                />
+              </Link>
             </div>
           ) : (
             <Link

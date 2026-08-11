@@ -1,9 +1,12 @@
-import { Link } from '@tanstack/react-router';
-import { Edit, Trash2, Plus } from 'lucide-react';
-import { useSchoolsStore } from '@/data/useSchoolsStore';
+import { Link } from "@tanstack/react-router";
+import { Edit, Trash2, Plus, Loader2 } from "lucide-react";
+import { useSchoolsStore } from "@/data/useSchoolsStore";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function SchoolsDataTable() {
   const { schools, deleteSchool } = useSchoolsStore();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   return (
     <div className="space-y-4">
@@ -18,7 +21,7 @@ export function SchoolsDataTable() {
         </Link>
       </div>
 
-      <div className="border rounded-lg shadow-sm bg-white overflow-hidden">
+      <div className="border rounded-lg shadow-sm bg-white overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="bg-slate-50 text-slate-600 border-b uppercase text-xs">
             <tr>
@@ -46,14 +49,27 @@ export function SchoolsDataTable() {
                       <Edit className="w-4 h-4" />
                     </Link>
                     <button
-                      onClick={() => {
-                        if (confirm('Are you sure you want to delete this school?')) {
-                          deleteSchool(school.id);
+                      disabled={deletingId === school.id}
+                      onClick={async () => {
+                        if (confirm("Are you sure you want to delete this school?")) {
+                          setDeletingId(school.id);
+                          try {
+                            await deleteSchool(school.id);
+                            toast.success("School deleted successfully");
+                          } catch (e) {
+                            toast.error("Failed to delete school");
+                          } finally {
+                            setDeletingId(null);
+                          }
                         }
                       }}
-                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      {deletingId === school.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                 </td>

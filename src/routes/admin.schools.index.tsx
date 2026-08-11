@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { SchoolsDataTable } from '@/components/admin/SchoolsDataTable';
+import { createFileRoute } from "@tanstack/react-router";
+import { SchoolsDataTable } from "@/components/admin/SchoolsDataTable";
 
-export const Route = createFileRoute('/admin/schools/')({
+export const Route = createFileRoute("/admin/schools/")({
   component: AdminSchoolsPage,
 });
 

@@ -6,11 +6,13 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  redirect,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/data/useUserStore";
 import { useSchoolsStore } from "@/data/useSchoolsStore";
+import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -76,6 +78,18 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: ({ location }) => {
+    const { session, hasCompletedOnboarding } = useUserStore.getState();
+    if (session && !hasCompletedOnboarding) {
+      if (
+        location.pathname !== "/profile" &&
+        location.pathname !== "/login" &&
+        location.pathname !== "/admin-login"
+      ) {
+        throw redirect({ to: "/profile" });
+      }
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -88,7 +102,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "School Guide" },
       { property: "og:title", content: "School Guide" },
-      { property: "og:description", content: "Find your future Applied Technology School in Egypt." },
+      {
+        property: "og:description",
+        content: "Find your future Applied Technology School in Egypt.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -131,24 +148,47 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const setSession = useUserStore((state) => state.setSession);
   const fetchSchools = useSchoolsStore((state) => state.fetchSchools);
+  const router = useRouter();
 
   useEffect(() => {
     fetchSchools();
-    
+
     const fetchRoleAndSetSession = async (session: any) => {
       if (session?.user) {
         const { data, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
+          .from("profiles")
+          .select(
+            "role, tier, is_subscribed, first_name, current_streak, points, unlocked_badges, school_id",
+          )
+          .eq("id", session.user.id)
           .single();
-        
+
         if (!error && data) {
           setSession(session, data.role);
+          useUserStore.getState().setSubscribed(data.is_subscribed, data.tier);
+          useUserStore.getState().setUserData({
+            current_streak: data.current_streak,
+            points: data.points,
+            unlocked_badges: data.unlocked_badges,
+            school_id: data.school_id,
+          });
+          if (data.first_name) {
+            useUserStore.getState().setOnboardingCompleted();
+          } else {
+            // If they are logged in but haven't completed onboarding, force them to the profile page
+            if (
+              window.location.pathname !== "/profile" &&
+              window.location.pathname !== "/login" &&
+              window.location.pathname !== "/admin-login"
+            ) {
+              router.navigate({ to: "/profile", replace: true });
+            }
+          }
           return;
         }
       }
       setSession(session, null);
+      useUserStore.getState().setSubscribed(false, "none");
     };
 
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -168,6 +208,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <Toaster />
     </QueryClientProvider>
   );
 }
