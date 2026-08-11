@@ -77,7 +77,7 @@ function Onboarding() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-[image:var(--gradient-hero)] px-6 pb-10 pt-14 text-primary-foreground">
+    <div className="mx-auto flex min-h-screen w-full flex-col bg-[image:var(--gradient-hero)] px-6 pb-10 pt-14 text-primary-foreground">
       <div className="flex-1">
         <div className="mx-auto grid size-44 place-items-center rounded-[2.5rem] bg-white/12 text-7xl shadow-[var(--shadow-float)] ring-1 ring-white/20">
           <span className="animate-in zoom-in duration-500" key={s.art}>
