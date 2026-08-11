@@ -167,3 +167,47 @@
     font-family: var(--font-sans);
   }
 }
+/* ==============================================
+   Global Scrollbar Styling
+   ============================================== */
+/* Hide the up and down arrows */
+::-webkit-scrollbar-button {
+  display: none; 
+}
+/* ==============================================
+   Global Scrollbar Styling
+   ============================================== */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #666666 #e0e0e0;
+}
+
+/* WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 6px;  
+  height: 6px; 
+}
+
+/* Hides the arrows at the top and bottom */
+::-webkit-scrollbar-button {
+  display: none; 
+}
+
+::-webkit-scrollbar-track {
+  background: #e0e0e0; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #666666; 
+  border-radius: 0px;  
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4d4d4d; 
+}
+
+::-webkit-scrollbar-corner {
+  background: #e0e0e0;
+}
