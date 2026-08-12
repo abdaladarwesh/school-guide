@@ -23,141 +23,165 @@ interface SchoolsState {
   fetchSchools: () => Promise<void>;
 }
 
-const uploadFile = async (file: File, folder: string) => {
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-  const filePath = `${folder}/${fileName}`;
+  const getClient = async () => {
+    const { data: { session: adminSession } } = await adminSupabase.auth.getSession();
+    return adminSession ? adminSupabase : supabase;
+  };
 
-  const { error: uploadError } = await adminSupabase.storage
-    .from("school-images")
-    .upload(filePath, file);
+  const uploadFile = async (file: File, folder: string) => {
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+    const filePath = `${folder}/${fileName}`;
+    const client = await getClient();
 
-  if (uploadError) {
-    console.error("Error uploading image:", uploadError);
-    throw uploadError;
-  }
+    const { error: uploadError } = await client.storage
+      .from("school-images")
+      .upload(filePath, file);
 
-  const { data: publicUrlData } = adminSupabase.storage.from("school-images").getPublicUrl(filePath);
+    if (uploadError) {
+      console.error("Error uploading image:", uploadError);
+      throw uploadError;
+    }
 
-  return publicUrlData.publicUrl;
-};
+    const { data: publicUrlData } = client.storage.from("school-images").getPublicUrl(filePath);
 
-export const useSchoolsStore = create<SchoolsState>()(
-  persist(
-    (set) => ({
-      schools: [],
-      isLoading: true,
-      addSchool: async (school, imageFile, logoFile, galleryFiles) => {
-        set({ isLoading: true });
-        try {
-          let imageUrl = school.image;
-          let logoUrl = school.logo;
-          let galleryUrls = school.gallery || [];
+    return publicUrlData.publicUrl;
+  };
 
-          if (imageFile) imageUrl = await uploadFile(imageFile, school.id);
-          if (logoFile) logoUrl = await uploadFile(logoFile, `${school.id}/logo`);
+  export const useSchoolsStore = create<SchoolsState>()(
+    persist(
+      (set, get) => ({
+        schools: [],
+        isLoading: true,
+        addSchool: async (school, imageFile, logoFile, galleryFiles) => {
+          set({ isLoading: true });
+          try {
+            let imageUrl = school.image;
+            let logoUrl = school.logo;
+            let galleryUrls = school.gallery || [];
 
-          if (galleryFiles && galleryFiles.length > 0) {
-            const uploadedGallery = await Promise.all(
-              galleryFiles.map((file) => uploadFile(file, `${school.id}/gallery`)),
-            );
-            galleryUrls = [...galleryUrls, ...uploadedGallery];
-          }
+            if (imageFile) imageUrl = await uploadFile(imageFile, school.id);
+            if (logoFile) logoUrl = await uploadFile(logoFile, `${school.id}/logo`);
 
-          const { partnerRating, school_admins, ...restSchool } = school;
-          const schoolToInsert = {
-            ...restSchool,
-            partner_rating: partnerRating,
-            image: imageUrl,
-            logo: logoUrl,
-            gallery: galleryUrls,
-          };
+            if (galleryFiles && galleryFiles.length > 0) {
+              const uploadedGallery = await Promise.all(
+                galleryFiles.map((file) => uploadFile(file, `${school.id}/gallery`)),
+              );
+              galleryUrls = [...galleryUrls, ...uploadedGallery];
+            }
 
-          const { error } = await adminSupabase.from("schools").insert(schoolToInsert);
+            const { partnerRating, school_admins, ...restSchool } = school;
+            const schoolToInsert = {
+              ...restSchool,
+              partner_rating: partnerRating,
+              image: imageUrl,
+              logo: logoUrl,
+              gallery: galleryUrls,
+            };
 
-          if (error) {
-            console.error("Error inserting school:", error);
+            const client = await getClient();
+            const { error } = await client.from("schools").insert(schoolToInsert);
+
+            if (error) {
+              console.error("Error inserting school:", error);
+              throw error;
+            }
+
+            if (school_admins && school_admins.length > 0) {
+              const adminsToInsert = school_admins.map((a) => ({
+                school_id: school.id,
+                profile_id: a.profile_id,
+              }));
+              const { error: adminError } = await client.from("school_admins").insert(adminsToInsert);
+              if (adminError) {
+                console.error("Error inserting school admins:", adminError);
+                throw adminError;
+              }
+            }
+
+            const localSchool = { ...school, image: imageUrl, logo: logoUrl, gallery: galleryUrls, school_admins };
+
+            set((state) => ({ schools: [...state.schools, localSchool], isLoading: false }));
+          } catch (error) {
+            console.error("Failed to add school:", error);
+            set({ isLoading: false });
             throw error;
           }
+        },
+        updateSchool: async (id, updatedSchool, imageFile, logoFile, galleryFiles) => {
+          set({ isLoading: true });
+          try {
+            let imageUrl = updatedSchool.image;
+            let logoUrl = updatedSchool.logo;
+            let galleryUrls = updatedSchool.gallery || [];
 
-          if (school_admins && school_admins.length > 0) {
-            const adminsToInsert = school_admins.map((a) => ({
-              school_id: school.id,
-              profile_id: a.profile_id,
-            }));
-            const { error: adminError } = await adminSupabase.from("school_admins").insert(adminsToInsert);
-            if (adminError) {
-              console.error("Error inserting school admins:", adminError);
-              throw adminError;
+            if (imageFile) imageUrl = await uploadFile(imageFile, id);
+            if (logoFile) logoUrl = await uploadFile(logoFile, `${id}/logo`);
+
+            if (galleryFiles && galleryFiles.length > 0) {
+              const uploadedGallery = await Promise.all(
+                galleryFiles.map((file) => uploadFile(file, `${id}/gallery`)),
+              );
+              galleryUrls = [...galleryUrls, ...uploadedGallery];
             }
-          }
 
-          const localSchool = { ...school, image: imageUrl, logo: logoUrl, gallery: galleryUrls, school_admins };
+            const { partnerRating, id: _id, school_admins, ...restSchool } = updatedSchool;
+            const schoolToUpdate = {
+              ...restSchool,
+              partner_rating: partnerRating,
+              image: imageUrl,
+              logo: logoUrl,
+              gallery: galleryUrls,
+            };
 
-          set((state) => ({ schools: [...state.schools, localSchool], isLoading: false }));
-        } catch (error) {
-          console.error("Failed to add school:", error);
-          set({ isLoading: false });
-          throw error;
-        }
-      },
-      updateSchool: async (id, updatedSchool, imageFile, logoFile, galleryFiles) => {
-        set({ isLoading: true });
-        try {
-          let imageUrl = updatedSchool.image;
-          let logoUrl = updatedSchool.logo;
-          let galleryUrls = updatedSchool.gallery || [];
+            const client = await getClient();
+            const { error } = await client.from("schools").update(schoolToUpdate).eq("id", id);
 
-          if (imageFile) imageUrl = await uploadFile(imageFile, id);
-          if (logoFile) logoUrl = await uploadFile(logoFile, `${id}/logo`);
-
-          if (galleryFiles && galleryFiles.length > 0) {
-            const uploadedGallery = await Promise.all(
-              galleryFiles.map((file) => uploadFile(file, `${id}/gallery`)),
-            );
-            galleryUrls = [...galleryUrls, ...uploadedGallery];
-          }
-
-          const { partnerRating, id: _id, school_admins, ...restSchool } = updatedSchool;
-          const schoolToUpdate = {
-            ...restSchool,
-            partner_rating: partnerRating,
-            image: imageUrl,
-            logo: logoUrl,
-            gallery: galleryUrls,
-          };
-
-          const { error } = await adminSupabase.from("schools").update(schoolToUpdate).eq("id", id);
-
-          if (error) {
-            console.error("Error updating school:", error);
-            throw error;
-          }
-
-          await adminSupabase.from("school_admins").delete().eq("school_id", id);
-          if (school_admins && school_admins.length > 0) {
-            const adminsToInsert = school_admins.map((a) => ({
-              school_id: id,
-              profile_id: a.profile_id,
-            }));
-            const { error: adminError } = await adminSupabase.from("school_admins").insert(adminsToInsert);
-            if (adminError) {
-              console.error("Error inserting school admins:", adminError);
-              throw adminError;
+            if (error) {
+              console.error("Error updating school:", error);
+              throw error;
             }
-          }
 
-          const localSchool = {
-            ...updatedSchool,
-            image: imageUrl,
-            logo: logoUrl,
-            gallery: galleryUrls,
-            school_admins,
-          };
+            let finalAdmins = school_admins;
+            const { error: deleteError } = await client.from("school_admins").delete().eq("school_id", id);
+            
+            if (deleteError) {
+              if (deleteError.code === '42501') {
+                console.warn("RLS prevented deleting school admins. Ignoring.");
+                finalAdmins = get().schools.find((s) => s.id === id)?.school_admins || [];
+              } else {
+                throw deleteError;
+              }
+            } else {
+              if (school_admins && school_admins.length > 0) {
+                const adminsToInsert = school_admins.map((a) => ({
+                  school_id: id,
+                  profile_id: a.profile_id,
+                }));
+                const { error: adminError } = await client.from("school_admins").insert(adminsToInsert);
+                if (adminError) {
+                  if (adminError.code === '42501') {
+                    console.warn("RLS prevented inserting school admins. Ignoring.");
+                    finalAdmins = get().schools.find((s) => s.id === id)?.school_admins || [];
+                  } else {
+                    console.error("Error inserting school admins:", adminError);
+                    throw adminError;
+                  }
+                }
+              }
+            }
 
-          set((state) => ({
-            schools: state.schools.map((s) => (s.id === id ? localSchool : s)),
-            isLoading: false,
+            const localSchool = {
+              ...updatedSchool,
+              image: imageUrl,
+              logo: logoUrl,
+              gallery: galleryUrls,
+              school_admins: finalAdmins,
+            };
+
+            set((state) => ({
+              schools: state.schools.map((s) => (s.id === id ? localSchool : s)),
+              isLoading: false,
           }));
         } catch (error) {
           console.error("Failed to update school:", error);
