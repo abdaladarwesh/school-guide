@@ -109,7 +109,7 @@ function Profile() {
     };
 
     loadProfile();
-  }, [session, navigate, fetchSchools, schools.length]);
+  }, [session?.user?.id]);
 
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {

@@ -42,7 +42,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/school/$schoolId")({
   loader: async ({ params }) => {
     let schools = useSchoolsStore.getState().schools;
-    
+
     // If store is empty, fetch schools first to prevent 404 on direct valid URL visits
     if (schools.length === 0) {
       await useSchoolsStore.getState().fetchSchools();
@@ -301,7 +301,7 @@ function SchoolPage() {
   const { school } = Route.useLoaderData();
   const [tab, setTab] = useState<(typeof tabs)[number]>("Overview");
   const [isAsking, setIsAsking] = useState(false);
-  
+
   const { session } = useUserStore();
   const { updateSchool } = useSchoolsStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -490,505 +490,509 @@ function SchoolPage() {
 
   return (
     <>
-    <div className="mx-auto min-h-screen w-full bg-background pb-24">
-      <div className="relative">
-        <img
-          src={school.image}
-          alt={school.name}
-          width={1024}
-          height={640}
-          className="h-60 w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20" />
-        <Link
-          to="/search"
-          aria-label="Back to schools"
-          className="absolute left-4 top-4 grid size-10 place-items-center rounded-full bg-card/90 text-foreground"
-        >
-          <ArrowLeft className="size-5" />
-        </Link>
-        {isAdmin && (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="absolute left-16 top-4 flex h-10 items-center justify-center gap-2 rounded-full bg-card/90 px-4 font-bold text-foreground"
+      <div className="mx-auto min-h-screen w-full bg-background pb-24 overflow-x-hidden min-w-0">
+        <div className="relative min-w-0">
+          <img
+            src={school.image}
+            alt={school.name}
+            width={1024}
+            height={640}
+            className="h-60 w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20" />
+          <Link
+            to="/search"
+            aria-label="Back to schools"
+            className="absolute left-4 top-4 grid size-10 place-items-center rounded-full bg-card/90 text-foreground"
           >
-            <Pencil className="size-4" /> Edit
-          </button>
-        )}
-        {school.prime && (
-          <span className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-[image:var(--gradient-warm)] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-accent-foreground">
-            <BadgeCheck className="size-3.5" /> Prime partner
-          </span>
-        )}
-        <div className="absolute bottom-4 left-4 right-4 text-primary-foreground flex gap-3 items-end">
-          {school.logo && (
-            <div className="bg-white p-1 rounded-xl shadow-lg shrink-0">
-              <img
-                src={school.logo}
-                alt={`${school.name} Logo`}
-                className="size-16 object-contain rounded-lg"
-              />
-            </div>
+            <ArrowLeft className="size-5 shrink-0" />
+          </Link>
+          {isAdmin && (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="absolute left-16 top-4 flex h-10 items-center justify-center gap-2 rounded-full bg-card/90 px-4 font-bold text-foreground"
+            >
+              <Pencil className="size-4 shrink-0" /> Edit
+            </button>
           )}
-          <div>
-            <h1 className="font-display text-2xl font-extrabold">{school.name}</h1>
-            {school.main_field_of_study && (
-              <p className="text-sm font-semibold text-primary-foreground/90 mt-0.5">
-                {school.main_field_of_study}
-              </p>
+          {school.prime && (
+            <span className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-[image:var(--gradient-warm)] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-accent-foreground">
+              <BadgeCheck className="size-3.5 shrink-0" /> Prime partner
+            </span>
+          )}
+          <div className="absolute bottom-4 left-4 right-4 text-primary-foreground flex gap-3 items-end min-w-0">
+            {school.logo && (
+              <div className="bg-white p-1 rounded-xl shadow-lg shrink-0">
+                <img
+                  src={school.logo}
+                  alt={`${school.name} Logo`}
+                  className="size-16 object-contain rounded-lg"
+                />
+              </div>
             )}
-            <p className="flex items-center gap-1 text-xs text-primary-foreground/85 mt-1">
-              <MapPin className="size-3.5" /> {school.location}
-            </p>
+            <div className="flex-1 min-w-0">
+              <h1 className="font-display text-2xl font-extrabold break-words">{school.name}</h1>
+              {school.main_field_of_study && (
+                <p className="text-sm font-semibold text-primary-foreground/90 mt-0.5 truncate">
+                  {school.main_field_of_study}
+                </p>
+              )}
+              <p className="flex items-center gap-1 text-xs text-primary-foreground/85 mt-1 truncate">
+                <MapPin className="size-3.5 shrink-0" /> <span className="truncate">{school.location}</span>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="sticky top-0 z-20 -mx-0 flex gap-1 overflow-x-auto border-b border-border bg-card/95 px-3 py-2 backdrop-blur">
-        {tabs.map((t) => (
-          <button
-            key={t}
-            onClick={() => handleTabClick(t)}
-            className={`shrink-0 rounded-full px-3.5 py-2 text-sm font-bold transition-colors ${
-              tab === t ? "bg-indigo text-primary-foreground" : "text-muted-foreground"
-            }`}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
+        <div className="sticky top-0 z-20 -mx-0 flex gap-1 overflow-x-auto border-b border-border bg-card/95 px-3 py-2 backdrop-blur">
+          {tabs.map((t) => (
+            <button
+              key={t}
+              onClick={() => handleTabClick(t)}
+              className={`shrink-0 rounded-full px-3.5 py-2 text-sm font-bold transition-colors ${tab === t ? "bg-indigo text-primary-foreground" : "text-muted-foreground"
+                }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
 
-      <div className="space-y-5 px-4 py-5">
-        {tab === "Overview" && (
-          <>
-            <section className="flex items-center gap-3 rounded-3xl bg-nuage/30 p-4">
-              <span className="grid size-12 place-items-center rounded-2xl bg-card font-display text-lg font-extrabold text-indigo">
-                {school.partner.slice(0, 1)}
-              </span>
-              <div className="flex-1">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-indigo">
-                  Industry partner
-                </p>
-                <p className="font-display text-base font-extrabold text-foreground">
-                  {school.partner}
-                </p>
-              </div>
-              <span className="flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-xs font-bold text-abricot">
-                <Star className="size-3.5 fill-current" /> {school.partnerRating}
-              </span>
-            </section>
-
-            <section className="grid grid-cols-3 gap-3">
-              {[
-                { icon: Users, value: school.students, label: "Students" },
-                { icon: Calendar, value: school.established, label: "Established" },
-                { icon: Briefcase, value: school.hired, label: "Hired grads" },
-              ].map(({ icon: Icon, value, label }) => (
-                <div
-                  key={label}
-                  className="rounded-2xl bg-card p-3 text-center shadow-[var(--shadow-card)]"
-                >
-                  <Icon className="mx-auto size-4 text-framboise" />
-                  <p className="mt-1 font-display text-lg font-extrabold text-foreground">
-                    {value}
-                  </p>
-                  <p className="text-[10px] font-semibold text-muted-foreground">{label}</p>
-                </div>
-              ))}
-            </section>
-
-            <section>
-              <h2 className="font-display text-lg font-extrabold text-foreground">
-                About the school
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{school.about}</p>
-            </section>
-
-            <section className="flex items-center gap-2 rounded-2xl bg-blush/50 p-4">
-              <Star className="size-5 shrink-0 fill-current text-abricot" />
-              <p className="text-sm font-semibold text-framboise">
-                Rated {school.rating} / 5 by current students and graduates
-              </p>
-            </section>
-
-            {school.gallery && school.gallery.length > 0 && (
-              <section>
-                <h2 className="font-display text-lg font-extrabold text-foreground mb-3">
-                  Gallery
-                </h2>
-                <div className="grid grid-cols-2 gap-2">
-                  {school.gallery.map((photo, idx) => (
-                    <img
-                      key={idx}
-                      src={photo}
-                      alt={`${school.name} Gallery ${idx + 1}`}
-                      className="w-full h-32 object-cover rounded-xl shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={() => setSelectedPhotoIndex(idx)}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
-          </>
-        )}
-
-        {tab === "Specializations" && (
-          <section className="space-y-3">
-            {school.specializations.map((sp) => (
-              <div
-                key={sp.name}
-                className="flex items-center gap-3 rounded-3xl bg-card p-4 shadow-[var(--shadow-card)]"
-              >
-                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-blush/60 text-xl">
-                  {sp.emoji}
+        <div className="space-y-5 px-4 py-5">
+          {tab === "Overview" && (
+            <>
+              <section className="flex items-center gap-3 rounded-3xl bg-nuage/30 p-4 min-w-0">
+                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-card font-display text-lg font-extrabold text-indigo">
+                  {school.partner.slice(0, 1)}
                 </span>
-                <div>
-                  <p className="font-display text-base font-extrabold text-foreground">{sp.name}</p>
-                  <p className="text-xs text-muted-foreground">{sp.detail}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-indigo truncate">
+                    Industry partner
+                  </p>
+                  <p className="font-display text-base font-extrabold text-foreground truncate">
+                    {school.partner}
+                  </p>
                 </div>
-              </div>
-            ))}
-          </section>
-        )}
+                <span className="flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-xs font-bold text-abricot shrink-0">
+                  <Star className="size-3.5 fill-current shrink-0" /> {school.partnerRating}
+                </span>
+              </section>
 
-        {tab === "Careers" && (
-          <section className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Where graduates of each specialization end up, with typical starting salary ranges.
-            </p>
-            {school.careers.map((c) => (
-              <div key={c.role} className="rounded-3xl bg-card p-4 shadow-[var(--shadow-card)]">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="font-display text-base font-extrabold text-foreground">{c.role}</p>
-                  <span className="shrink-0 rounded-full bg-nuage/40 px-2.5 py-1 text-xs font-bold text-indigo">
-                    {c.salary}
-                  </span>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">From {c.from}</p>
-              </div>
-            ))}
-          </section>
-        )}
-
-        {tab === "Admission" && (
-          <section className="space-y-3">
-            {[
-              { label: "Minimum grade", value: school.admission.minGrade },
-              { label: "Background", value: school.admission.background },
-              { label: "Age range", value: school.admission.age },
-              { label: "Interview", value: school.admission.interview },
-            ].map((r) => (
-              <div key={r.label} className="rounded-2xl bg-card p-4 shadow-[var(--shadow-card)]">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-framboise">
-                  {r.label}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-foreground">{r.value}</p>
-              </div>
-            ))}
-            {/* <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[image:var(--gradient-warm)] py-4 font-display text-lg font-extrabold text-accent-foreground shadow-[var(--shadow-float)]">
-              Apply Now <ArrowRight className="size-5" />
-            </button> */}
-          </section>
-        )}
-
-        {tab === "Community" && (
-          <div className="space-y-5">
-            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2">
-              {["All", "Admissions", "Specializations", "Careers", "Campus life"].map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setCommunityFilter(t)}
-                  className={`shrink-0 rounded-full px-4 py-2 text-sm font-bold transition-colors ${
-                    t === communityFilter
-                      ? "bg-framboise text-primary-foreground"
-                      : "border border-border bg-card text-muted-foreground hover:bg-muted"
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-
-            {isPostsLoading ? (
-              <div className="rounded-3xl border border-border bg-card p-5 shadow-[var(--shadow-card)]">
-                <div className="flex animate-pulse flex-col space-y-3 mt-2">
-                  <div className="flex justify-between gap-4">
-                    <div className="h-5 w-1/2 rounded-md bg-muted"></div>
-                    <div className="h-5 w-1/6 rounded-md bg-muted"></div>
+              <section className="grid grid-cols-3 gap-3">
+                {[
+                  { icon: Users, value: school.students, label: "Students" },
+                  { icon: Calendar, value: school.established, label: "Established" },
+                  { icon: Briefcase, value: school.hired, label: "Hired grads" },
+                ].map(({ icon: Icon, value, label }) => (
+                  <div
+                    key={label}
+                    className="rounded-2xl bg-card p-3 text-center shadow-[var(--shadow-card)] min-w-0 flex flex-col items-center justify-center overflow-hidden"
+                  >
+                    <Icon className="size-4 text-framboise shrink-0" />
+                    <p className="mt-1 font-display text-lg font-extrabold text-foreground truncate w-full">
+                      {value}
+                    </p>
+                    <p className="text-[10px] font-semibold text-muted-foreground truncate w-full">{label}</p>
                   </div>
-                  <div className="h-3 w-1/3 rounded-md bg-muted"></div>
-                  <div className="h-3 w-1/2 rounded-md bg-muted"></div>
-                  <div className="h-3 w-full rounded-md bg-muted"></div>
-                </div>
-              </div>
-            ) : (
-              posts
-                .filter(
-                  (p) =>
-                    communityFilter === "All" ||
-                    p.tag === communityFilter ||
-                    (communityFilter === "Campus life" && p.tag === "ATS New Cairo"),
-                )
-                .map((p) => {
-                  const isLiked = hasLiked(p.id);
-                  return (
-                    <article
-                      key={p.id || p.author_id}
-                      className="rounded-3xl bg-card p-4 shadow-[var(--shadow-card)]"
-                    >
-                      <div className="flex items-center gap-3">
-                        <UserProfilePopup profiles={p.profiles}>
-                          {p.profiles?.avatar_url ? (
-                            <img src={p.profiles.avatar_url} alt={p.profiles.first_name} className="size-10 rounded-full object-cover shrink-0" />
-                          ) : (
-                            <div className="grid size-10 place-items-center rounded-full bg-nuage/60 font-display text-sm font-bold text-indigo shrink-0">
-                              {p.profiles?.first_name?.slice(0, 2) || "??"}
-                            </div>
-                          )}
-                        </UserProfilePopup>
-                        <div className="flex-1">
-                          <UserProfilePopup profiles={p.profiles}>
-                            <p className="font-display text-sm font-extrabold text-foreground flex items-center gap-1.5">
-                              {p.profiles?.first_name} {p.profiles?.last_name}
-                              {school.school_admins?.some(a => a.profiles?.email === p.profiles?.email) && (
-                                <span className="text-[9px] bg-indigo text-white px-1.5 py-0.5 rounded-sm uppercase tracking-wider font-bold">Admin</span>
-                              )}
-                            </p>
-                          </UserProfilePopup>
-                          <p className="text-[11px] text-muted-foreground mt-0.5">
-                            {p.tag} • {p.time} ago
-                          </p>
-                        </div>
-                      </div>
-                      <p className="mt-3 text-sm leading-relaxed text-foreground/85">{p.body}</p>
-                      {p.image_urls && p.image_urls.length > 0 && (
-                        <div className="mt-3 -mx-4 px-4 flex gap-2 overflow-x-auto snap-x snap-mandatory hide-scrollbar">
-                          {p.image_urls.map((url, idx) => (
-                            <div key={idx} className="shrink-0 w-[85%] snap-center cursor-pointer" onClick={() => {
-                              setFullscreenPostImages(p.image_urls!);
-                              setFullscreenImageIndex(idx);
-                            }}>
-                              <img src={url} alt={`Post image ${idx + 1}`} className="w-full h-72 object-cover rounded-2xl border border-border" />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      <div className="mt-3 flex gap-5 text-xs font-bold text-muted-foreground">
-                        <button
-                          onClick={() => {
-                            if (isLiked) {
-                              unlikePost(p.id);
-                              removeLikedPost(p.id);
-                            } else {
-                              likePost(p.id);
-                              addLikedPost(p.id);
-                            }
-                          }}
-                          className={`flex items-center gap-1.5 transition-colors active:scale-95 ${isLiked ? "text-framboise" : "hover:text-framboise text-muted-foreground"}`}
-                        >
-                          <Heart
-                            className={`size-4 ${isLiked ? "fill-current text-framboise" : "text-framboise"}`}
-                          />{" "}
-                          {p.likes}
-                        </button>
-                        <button
-                          onClick={() => setExpandedPostId(expandedPostId === p.id ? null : p.id)}
-                          className="flex items-center gap-1.5 hover:text-indigo transition-colors active:scale-95"
-                        >
-                          <MessageCircle className="size-4" /> {p.replies} replies
-                        </button>
-                      </div>
-                      {expandedPostId === p.id && <PostReplies postId={p.id} schoolAdmins={school.school_admins} />}
-                    </article>
-                  );
-                })
-            )}
+                ))}
+              </section>
 
-            {isAsking ? (
-              <div className="rounded-3xl bg-card p-4 shadow-[var(--shadow-card)]">
-                <h3 className="font-display text-lg font-extrabold text-foreground">
-                  Create a post
-                </h3>
-                <select
-                  value={questionTag}
-                  onChange={(e) => setQuestionTag(e.target.value)}
-                  className="mt-3 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-indigo"
-                >
-                  <option>Admissions</option>
-                  <option>Specializations</option>
-                  <option>Careers</option>
-                  <option>Campus life</option>
-                </select>
-                <textarea
-                  value={questionBody}
-                  onChange={(e) => setQuestionBody(e.target.value)}
-                  placeholder="What's on your mind?"
-                  className="mt-3 h-24 w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-indigo"
-                />
-                
-                {postImagePreviews.length > 0 && (
-                  <div className="mt-3 flex gap-2 overflow-x-auto pb-2 snap-x hide-scrollbar">
-                    {postImagePreviews.map((preview, idx) => (
-                      <div key={idx} className="relative inline-block shrink-0 snap-center">
-                        <img src={preview} alt="Preview" className="h-28 w-28 rounded-lg object-cover" />
-                        <button 
-                          onClick={() => {
-                            setPostImageFiles(prev => prev.filter((_, i) => i !== idx));
-                            setPostImagePreviews(prev => prev.filter((_, i) => i !== idx));
-                          }}
-                          className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black/80"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
+              <section className="min-w-0">
+                <h2 className="font-display text-lg font-extrabold text-foreground">
+                  About the school
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground break-words">{school.about}</p>
+              </section>
+
+              <section className="flex items-center gap-2 rounded-2xl bg-blush/50 p-4">
+                <Star className="size-5 shrink-0 fill-current text-abricot" />
+                <p className="text-sm font-semibold text-framboise">
+                  Rated {school.rating} / 5 by current students and graduates
+                </p>
+              </section>
+
+              {school.gallery && school.gallery.length > 0 && (
+                <section>
+                  <h2 className="font-display text-lg font-extrabold text-foreground mb-3">
+                    Gallery
+                  </h2>
+                  <div className="grid grid-cols-2 gap-2">
+                    {school.gallery.map((photo, idx) => (
+                      <img
+                        key={idx}
+                        src={photo}
+                        alt={`${school.name} Gallery ${idx + 1}`}
+                        className="w-full h-32 object-cover rounded-xl shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => setSelectedPhotoIndex(idx)}
+                      />
                     ))}
                   </div>
-                )}
+                </section>
+              )}
+            </>
+          )}
 
-                <div className="mt-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <label className="flex items-center justify-center p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors text-muted-foreground hover:text-foreground">
-                      <input type="file" accept="image/*" multiple className="hidden" onChange={handlePostImageChange} />
-                      <ImageIcon className="w-5 h-5" />
-                    </label>
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => {
-                        setIsAsking(false);
-                        setPostImageFiles([]);
-                        setPostImagePreviews([]);
-                      }}
-                      className="px-4 py-2 rounded-xl bg-muted text-sm font-bold text-muted-foreground transition-colors hover:bg-muted/80"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSubmitQuestion}
-                      disabled={isAddingPost || isUploadingImage || (!questionBody.trim() && postImageFiles.length === 0)}
-                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-                    >
-                      {(isAddingPost || isUploadingImage) ? <Loader2 className="w-4 h-4 animate-spin" /> : "Post"}
-                    </button>
+          {tab === "Specializations" && (
+            <section className="space-y-3">
+              {school.specializations.map((sp) => (
+                <div
+                  key={sp.name}
+                  className="flex items-center gap-3 rounded-3xl bg-card p-4 shadow-[var(--shadow-card)] min-w-0"
+                >
+                  <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-blush/60 text-xl">
+                    {sp.emoji}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-display text-base font-extrabold text-foreground truncate">{sp.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{sp.detail}</p>
                   </div>
                 </div>
+              ))}
+            </section>
+          )}
+
+          {tab === "Careers" && (
+            <section className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Where graduates of each specialization end up, with typical starting salary ranges.
+              </p>
+              {school.careers.map((c) => (
+                <div key={c.role} className="rounded-3xl bg-card p-4 shadow-[var(--shadow-card)] min-w-0">
+                  <div className="flex items-start justify-between gap-3 min-w-0">
+                    <p className="font-display text-base font-extrabold text-foreground break-words flex-1 min-w-0">{c.role}</p>
+                    <span className="shrink-0 rounded-full bg-nuage/40 px-2.5 py-1 text-xs font-bold text-indigo">
+                      {c.salary}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground truncate">From {c.from}</p>
+                </div>
+              ))}
+            </section>
+          )}
+
+          {tab === "Admission" && (
+            <section className="space-y-3">
+              {[
+                { label: "Minimum grade", value: school.admission.minGrade },
+                { label: "Background", value: school.admission.background },
+                { label: "Age range", value: school.admission.age },
+                { label: "Interview", value: school.admission.interview },
+              ].map((r) => (
+                <div key={r.label} className="rounded-2xl bg-card p-4 shadow-[var(--shadow-card)] min-w-0">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-framboise truncate">
+                    {r.label}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-foreground break-words">{r.value}</p>
+                </div>
+              ))}
+              {/* <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[image:var(--gradient-warm)] py-4 font-display text-lg font-extrabold text-accent-foreground shadow-[var(--shadow-float)]">
+              Apply Now <ArrowRight className="size-5" />
+            </button> */}
+            </section>
+          )}
+
+          {tab === "Community" && (
+            <div className="space-y-5">
+              <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2">
+                {["All", "Admissions", "Specializations", "Careers", "Campus life"].map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setCommunityFilter(t)}
+                    className={`shrink-0 rounded-full px-4 py-2 text-sm font-bold transition-colors ${t === communityFilter
+                        ? "bg-framboise text-primary-foreground"
+                        : "border border-border bg-card text-muted-foreground hover:bg-muted"
+                      }`}
+                  >
+                    {t}
+                  </button>
+                ))}
               </div>
-            ) : (
+
+              {isPostsLoading ? (
+                <div className="rounded-3xl border border-border bg-card p-5 shadow-[var(--shadow-card)]">
+                  <div className="flex animate-pulse flex-col space-y-3 mt-2">
+                    <div className="flex justify-between gap-4">
+                      <div className="h-5 w-1/2 rounded-md bg-muted"></div>
+                      <div className="h-5 w-1/6 rounded-md bg-muted"></div>
+                    </div>
+                    <div className="h-3 w-1/3 rounded-md bg-muted"></div>
+                    <div className="h-3 w-1/2 rounded-md bg-muted"></div>
+                    <div className="h-3 w-full rounded-md bg-muted"></div>
+                  </div>
+                </div>
+              ) : (
+                posts
+                  .filter(
+                    (p) =>
+                      communityFilter === "All" ||
+                      p.tag === communityFilter ||
+                      (communityFilter === "Campus life" && p.tag === "ATS New Cairo"),
+                  )
+                  .map((p) => {
+                    const isLiked = hasLiked(p.id);
+                    return (
+                      <article
+                        key={p.id || p.author_id}
+                        className="rounded-3xl bg-card p-4 shadow-[var(--shadow-card)] min-w-0"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <UserProfilePopup profiles={p.profiles}>
+                            {p.profiles?.avatar_url ? (
+                              <img src={p.profiles.avatar_url} alt={p.profiles.first_name} className="size-10 rounded-full object-cover shrink-0" />
+                            ) : (
+                              <div className="grid size-10 place-items-center rounded-full bg-nuage/60 font-display text-sm font-bold text-indigo shrink-0">
+                                {p.profiles?.first_name?.slice(0, 2) || "??"}
+                              </div>
+                            )}
+                          </UserProfilePopup>
+                          <div className="flex-1 min-w-0">
+                            <UserProfilePopup profiles={p.profiles}>
+                              <p className="font-display text-sm font-extrabold text-foreground flex items-center gap-1.5 flex-wrap min-w-0">
+                                <span className="truncate">{p.profiles?.first_name} {p.profiles?.last_name}</span>
+                                {school.school_admins?.some(a => a.profiles?.email === p.profiles?.email) && (
+                                  <span className="text-[9px] bg-indigo text-white px-1.5 py-0.5 rounded-sm uppercase tracking-wider font-bold">Admin</span>
+                                )}
+                              </p>
+                            </UserProfilePopup>
+                            <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                              {p.tag} • {p.time} ago
+                            </p>
+                          </div>
+                        </div>
+                        <p className="mt-3 text-sm leading-relaxed text-foreground/85 break-words">{p.body}</p>
+                        {p.image_urls && p.image_urls.length > 0 && (
+                          <div className="mt-3 -mx-4 px-4 flex gap-2 overflow-x-auto snap-x snap-mandatory hide-scrollbar">
+                            {p.image_urls.map((url, idx) => (
+                              <div key={idx} className="shrink-0 w-[85%] snap-center cursor-pointer" onClick={() => {
+                                setFullscreenPostImages(p.image_urls!);
+                                setFullscreenImageIndex(idx);
+                              }}>
+                                <img src={url} alt={`Post image ${idx + 1}`} className="w-full h-72 object-cover rounded-2xl border border-border" />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <div className="mt-3 flex gap-5 text-xs font-bold text-muted-foreground">
+                          <button
+                            onClick={() => {
+                              if (isLiked) {
+                                unlikePost(p.id);
+                                removeLikedPost(p.id);
+                              } else {
+                                likePost(p.id);
+                                addLikedPost(p.id);
+                              }
+                            }}
+                            className={`flex items-center gap-1.5 transition-colors active:scale-95 ${isLiked ? "text-framboise" : "hover:text-framboise text-muted-foreground"}`}
+                          >
+                            <Heart
+                              className={`size-4 ${isLiked ? "fill-current text-framboise" : "text-framboise"}`}
+                            />{" "}
+                            {p.likes}
+                          </button>
+                          <button
+                            onClick={() => setExpandedPostId(expandedPostId === p.id ? null : p.id)}
+                            className="flex items-center gap-1.5 hover:text-indigo transition-colors active:scale-95"
+                          >
+                            <MessageCircle className="size-4" /> {p.replies} replies
+                          </button>
+                        </div>
+                        {expandedPostId === p.id && <PostReplies postId={p.id} schoolAdmins={school.school_admins} />}
+                      </article>
+                    );
+                  })
+              )}
+
+              {isAsking ? (
+                <div className="rounded-3xl bg-card p-4 shadow-[var(--shadow-card)] min-w-0">
+                  <h3 className="font-display text-lg font-extrabold text-foreground truncate">
+                    Create a post
+                  </h3>
+                  <select
+                    value={questionTag}
+                    onChange={(e) => setQuestionTag(e.target.value)}
+                    className="mt-3 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-indigo min-w-0"
+                  >
+                    <option>Admissions</option>
+                    <option>Specializations</option>
+                    <option>Careers</option>
+                    <option>Campus life</option>
+                  </select>
+                  <textarea
+                    value={questionBody}
+                    onChange={(e) => setQuestionBody(e.target.value)}
+                    placeholder="What's on your mind?"
+                    className="mt-3 h-24 w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-indigo min-w-0"
+                  />
+
+                  {postImagePreviews.length > 0 && (
+                    <div className="mt-3 flex gap-2 overflow-x-auto pb-2 snap-x hide-scrollbar">
+                      {postImagePreviews.map((preview, idx) => (
+                        <div key={idx} className="relative inline-block shrink-0 snap-center">
+                          <img src={preview} alt="Preview" className="h-28 w-28 rounded-lg object-cover" />
+                          <button
+                            onClick={() => {
+                              setPostImageFiles(prev => prev.filter((_, i) => i !== idx));
+                              setPostImagePreviews(prev => prev.filter((_, i) => i !== idx));
+                            }}
+                            className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black/80"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <label className="flex items-center justify-center p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors text-muted-foreground hover:text-foreground">
+                        <input type="file" accept="image/*" multiple className="hidden" onChange={handlePostImageChange} />
+                        <ImageIcon className="w-5 h-5" />
+                      </label>
+                    </div>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          setIsAsking(false);
+                          setPostImageFiles([]);
+                          setPostImagePreviews([]);
+                        }}
+                        className="px-4 py-2 rounded-xl bg-muted text-sm font-bold text-muted-foreground transition-colors hover:bg-muted/80"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleSubmitQuestion}
+                        disabled={isAddingPost || isUploadingImage || (!questionBody.trim() && postImageFiles.length === 0)}
+                        className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                        {(isAddingPost || isUploadingImage) ? <Loader2 className="w-4 h-4 animate-spin" /> : "Post"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setIsAsking(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo py-3.5 font-display font-extrabold text-primary-foreground shadow-[var(--shadow-card)]"
+                >
+                  <Plus className="size-5" /> Create a post
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+        <BottomNav />
+
+        {selectedPhotoIndex !== null && school.gallery && (
+          <div
+            className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center backdrop-blur-sm"
+            onClick={() => setSelectedPhotoIndex(null)}
+          >
+            <button
+              className="absolute top-6 right-6 p-2 text-white/70 hover:text-white transition-colors bg-black/20 rounded-full"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedPhotoIndex(null);
+              }}
+            >
+              <X className="size-6" />
+            </button>
+
+            <div className="relative w-full h-full flex items-center justify-center p-4">
               <button
-                onClick={() => setIsAsking(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo py-3.5 font-display font-extrabold text-primary-foreground shadow-[var(--shadow-card)]"
+                className="absolute left-4 p-3 text-white/70 hover:text-white transition-colors bg-black/70 hover:bg-black/60 rounded-full z-10"
+                onClick={handlePrevPhoto}
               >
-                <Plus className="size-5" /> Create a post
+                <ChevronLeft className="size-8" />
               </button>
-            )}
+
+              <img
+                src={school.gallery[selectedPhotoIndex]}
+                alt="Gallery Photo"
+                className="max-w-full max-h-full object-contain select-none"
+                onClick={(e) => e.stopPropagation()}
+              />
+
+              <button
+                className="absolute right-4 p-3 text-white/70 hover:text-white transition-colors bg-black/40 hover:bg-black/60 rounded-full z-10"
+                onClick={handleNextPhoto}
+              >
+                <ChevronRight className="size-8" />
+              </button>
+            </div>
+
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 font-semibold text-sm bg-black/40 px-3 py-1.5 rounded-full">
+              {selectedPhotoIndex + 1} / {school.gallery.length}
+            </div>
+          </div>
+        )}
+
+        {fullscreenPostImages !== null && (
+          <div
+            className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center backdrop-blur-sm"
+            onClick={() => setFullscreenPostImages(null)}
+          >
+            <button
+              className="absolute top-6 right-6 p-2 text-white/70 hover:text-white transition-colors bg-black/20 rounded-full"
+              onClick={(e) => {
+                e.stopPropagation();
+                setFullscreenPostImages(null);
+              }}
+            >
+              <X className="size-6" />
+            </button>
+
+            <div className="relative w-full h-full flex items-center justify-center p-4">
+              <button
+                className="absolute left-4 p-3 text-white/70 hover:text-white transition-colors bg-black/70 hover:bg-black/60 rounded-full z-10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFullscreenImageIndex((prev) => (prev - 1 + fullscreenPostImages.length) % fullscreenPostImages.length);
+                }}
+              >
+                <ChevronLeft className="size-8" />
+              </button>
+
+              <img
+                src={fullscreenPostImages[fullscreenImageIndex]}
+                alt="Fullscreen Post Image"
+                className="max-w-full max-h-full object-contain select-none"
+                onClick={(e) => e.stopPropagation()}
+              />
+
+              <button
+                className="absolute right-4 p-3 text-white/70 hover:text-white transition-colors bg-black/40 hover:bg-black/60 rounded-full z-10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFullscreenImageIndex((prev) => (prev + 1) % fullscreenPostImages.length);
+                }}
+              >
+                <ChevronRight className="size-8" />
+              </button>
+            </div>
+
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 font-semibold text-sm bg-black/40 px-3 py-1.5 rounded-full">
+              {fullscreenImageIndex + 1} / {fullscreenPostImages.length}
+            </div>
           </div>
         )}
       </div>
-      <BottomNav />
 
-      {selectedPhotoIndex !== null && school.gallery && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center backdrop-blur-sm"
-          onClick={() => setSelectedPhotoIndex(null)}
-        >
-          <button
-            className="absolute top-6 right-6 p-2 text-white/70 hover:text-white transition-colors bg-black/20 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedPhotoIndex(null);
-            }}
-          >
-            <X className="size-6" />
-          </button>
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="w-[calc(100vw-1rem)] sm:w-[95vw] md:max-w-4xl max-h-[90vh] overflow-y-auto overflow-x-hidden p-3 md:p-6 min-w-0">
+          <DialogHeader className="min-w-0">
+            <DialogTitle className="break-words text-lg sm:text-xl">
+              Edit School Information
+            </DialogTitle>
+          </DialogHeader>
 
-          <div className="relative w-full h-full flex items-center justify-center p-4">
-            <button
-              className="absolute left-4 p-3 text-white/70 hover:text-white transition-colors bg-black/70 hover:bg-black/60 rounded-full z-10"
-              onClick={handlePrevPhoto}
-            >
-              <ChevronLeft className="size-8" />
-            </button>
+          {/* The SchoolForm already has min-w-0 and w-full applied from our previous fix, 
+            so it will safely compress inside this modal now. */}
+          <SchoolForm initialData={school} onSubmit={handleEditSubmit} isLoading={isSubmitting} />
 
-            <img
-              src={school.gallery[selectedPhotoIndex]}
-              alt="Gallery Photo"
-              className="max-w-full max-h-full object-contain select-none"
-              onClick={(e) => e.stopPropagation()}
-            />
-
-            <button
-              className="absolute right-4 p-3 text-white/70 hover:text-white transition-colors bg-black/40 hover:bg-black/60 rounded-full z-10"
-              onClick={handleNextPhoto}
-            >
-              <ChevronRight className="size-8" />
-            </button>
-          </div>
-
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 font-semibold text-sm bg-black/40 px-3 py-1.5 rounded-full">
-            {selectedPhotoIndex + 1} / {school.gallery.length}
-          </div>
-        </div>
-      )}
-
-      {fullscreenPostImages !== null && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center backdrop-blur-sm"
-          onClick={() => setFullscreenPostImages(null)}
-        >
-          <button
-            className="absolute top-6 right-6 p-2 text-white/70 hover:text-white transition-colors bg-black/20 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setFullscreenPostImages(null);
-            }}
-          >
-            <X className="size-6" />
-          </button>
-
-          <div className="relative w-full h-full flex items-center justify-center p-4">
-            <button
-              className="absolute left-4 p-3 text-white/70 hover:text-white transition-colors bg-black/70 hover:bg-black/60 rounded-full z-10"
-              onClick={(e) => {
-                e.stopPropagation();
-                setFullscreenImageIndex((prev) => (prev - 1 + fullscreenPostImages.length) % fullscreenPostImages.length);
-              }}
-            >
-              <ChevronLeft className="size-8" />
-            </button>
-
-            <img
-              src={fullscreenPostImages[fullscreenImageIndex]}
-              alt="Fullscreen Post Image"
-              className="max-w-full max-h-full object-contain select-none"
-              onClick={(e) => e.stopPropagation()}
-            />
-
-            <button
-              className="absolute right-4 p-3 text-white/70 hover:text-white transition-colors bg-black/40 hover:bg-black/60 rounded-full z-10"
-              onClick={(e) => {
-                e.stopPropagation();
-                setFullscreenImageIndex((prev) => (prev + 1) % fullscreenPostImages.length);
-              }}
-            >
-              <ChevronRight className="size-8" />
-            </button>
-          </div>
-
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 font-semibold text-sm bg-black/40 px-3 py-1.5 rounded-full">
-            {fullscreenImageIndex + 1} / {fullscreenPostImages.length}
-          </div>
-        </div>
-      )}
-    </div>
-    
-    <Dialog open={isEditing} onOpenChange={setIsEditing}>
-      <DialogContent className="w-[95vw] md:max-w-4xl max-h-[90vh] overflow-y-auto p-4 md:p-6">
-        <DialogHeader>
-          <DialogTitle>Edit School Information</DialogTitle>
-        </DialogHeader>
-        <SchoolForm initialData={school} onSubmit={handleEditSubmit} isLoading={isSubmitting} />
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

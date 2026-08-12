@@ -34,12 +34,14 @@ function EditSchoolPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 p-4 md:p-6 overflow-hidden">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+    <div className="w-full max-w-5xl mx-auto space-y-4 md:space-y-6 p-3 md:p-6 overflow-x-hidden">
+      <div className="min-w-0">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 break-words">
           Edit School: {school.name}
         </h1>
-        <p className="text-slate-500 mt-2">Update the details for this school.</p>
+        <p className="text-sm md:text-base text-slate-500 mt-1 md:mt-2">
+          Update the details for this school.
+        </p>
       </div>
       <SchoolForm initialData={school} onSubmit={handleSubmit} isLoading={isLoading} />
     </div>
