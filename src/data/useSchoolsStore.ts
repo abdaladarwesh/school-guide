@@ -64,7 +64,7 @@ export const useSchoolsStore = create<SchoolsState>()(
             galleryUrls = [...galleryUrls, ...uploadedGallery];
           }
 
-          const { partnerRating, ...restSchool } = school;
+          const { partnerRating, school_admins, ...restSchool } = school;
           const schoolToInsert = {
             ...restSchool,
             partner_rating: partnerRating,
@@ -80,7 +80,19 @@ export const useSchoolsStore = create<SchoolsState>()(
             throw error;
           }
 
-          const localSchool = { ...school, image: imageUrl, logo: logoUrl, gallery: galleryUrls };
+          if (school_admins && school_admins.length > 0) {
+            const adminsToInsert = school_admins.map((a) => ({
+              school_id: school.id,
+              profile_id: a.profile_id,
+            }));
+            const { error: adminError } = await adminSupabase.from("school_admins").insert(adminsToInsert);
+            if (adminError) {
+              console.error("Error inserting school admins:", adminError);
+              throw adminError;
+            }
+          }
+
+          const localSchool = { ...school, image: imageUrl, logo: logoUrl, gallery: galleryUrls, school_admins };
 
           set((state) => ({ schools: [...state.schools, localSchool], isLoading: false }));
         } catch (error) {
@@ -106,7 +118,7 @@ export const useSchoolsStore = create<SchoolsState>()(
             galleryUrls = [...galleryUrls, ...uploadedGallery];
           }
 
-          const { partnerRating, id: _id, ...restSchool } = updatedSchool;
+          const { partnerRating, id: _id, school_admins, ...restSchool } = updatedSchool;
           const schoolToUpdate = {
             ...restSchool,
             partner_rating: partnerRating,
@@ -122,11 +134,25 @@ export const useSchoolsStore = create<SchoolsState>()(
             throw error;
           }
 
+          await adminSupabase.from("school_admins").delete().eq("school_id", id);
+          if (school_admins && school_admins.length > 0) {
+            const adminsToInsert = school_admins.map((a) => ({
+              school_id: id,
+              profile_id: a.profile_id,
+            }));
+            const { error: adminError } = await adminSupabase.from("school_admins").insert(adminsToInsert);
+            if (adminError) {
+              console.error("Error inserting school admins:", adminError);
+              throw adminError;
+            }
+          }
+
           const localSchool = {
             ...updatedSchool,
             image: imageUrl,
             logo: logoUrl,
             gallery: galleryUrls,
+            school_admins,
           };
 
           set((state) => ({
@@ -160,7 +186,7 @@ export const useSchoolsStore = create<SchoolsState>()(
       fetchSchools: async () => {
         set({ isLoading: true });
         try {
-          const { data, error } = await supabase.from("schools").select("*");
+          const { data, error } = await supabase.from("schools").select("*, school_admins(profile_id, profiles(email, first_name, last_name))");
           if (error) {
             console.error("Error fetching schools from Supabase:", error);
             set({ isLoading: false });

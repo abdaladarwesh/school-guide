@@ -14,12 +14,23 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import type { School } from "@/data/schools";
-import { Plus, Trash2, Upload } from "lucide-react";
+import { Plus, Trash2, Upload, Check, ChevronsUpDown, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { useFieldsOfStudyStore } from "@/data/useFieldsOfStudyStore";
 import { useCitiesStore } from "@/data/useCitiesStore";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
+import { cn } from "@/lib/utils";
 
 const schoolSchema = z.object({
   id: z.string().min(1, "ID is required"),
@@ -58,6 +69,16 @@ const schoolSchema = z.object({
     age: z.string(),
     interview: z.string(),
   }),
+  school_admins: z.array(
+    z.object({
+      profile_id: z.string(),
+      profiles: z.object({
+        email: z.string(),
+        first_name: z.string().optional(),
+        last_name: z.string().optional(),
+      }).optional()
+    })
+  ).optional(),
 });
 
 type SchoolFormValues = z.infer<typeof schoolSchema>;
@@ -89,9 +110,20 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
   const [newCity, setNewCity] = useState("");
   const [isAddingCity, setIsAddingCity] = useState(false);
 
+  const [availableProfiles, setAvailableProfiles] = useState<{ id: string; email: string; first_name?: string; last_name?: string }[]>([]);
+  const [openAdminsPopover, setOpenAdminsPopover] = useState(false);
+
   useEffect(() => {
     fetchFields();
     fetchCities();
+    
+    const fetchProfiles = async () => {
+      const { data, error } = await supabase.from("profiles").select("id, email, first_name, last_name").not("email", "is", null);
+      if (data && !error) {
+        setAvailableProfiles(data as any);
+      }
+    };
+    fetchProfiles();
   }, [fetchFields, fetchCities]);
 
   const handleAddField = async (e: React.MouseEvent) => {
@@ -144,6 +176,7 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
       specializations: [],
       careers: [],
       admission: { minGrade: "", background: "", age: "", interview: "" },
+      school_admins: initialData?.school_admins || [],
     },
   });
 
@@ -155,6 +188,11 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
   const careersField = useFieldArray({
     control: form.control,
     name: "careers",
+  });
+
+  const schoolAdminsField = useFieldArray({
+    control: form.control,
+    name: "school_admins",
   });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -793,6 +831,89 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
               </FormItem>
             )}
           />
+        </div>
+
+        {/* Administrators */}
+        <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+          <div className="flex justify-between items-center border-b pb-2 mb-4">
+            <h3 className="text-lg font-semibold">School Administrators</h3>
+          </div>
+          <div className="space-y-4">
+            <Popover open={openAdminsPopover} onOpenChange={setOpenAdminsPopover}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={openAdminsPopover}
+                  className="w-full justify-between"
+                >
+                  Select a profile to add as admin...
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Search by email or name..." />
+                  <CommandList>
+                    <CommandEmpty>No profiles found.</CommandEmpty>
+                    <CommandGroup>
+                      {availableProfiles
+                        .filter(p => !schoolAdminsField.fields.some(a => a.profile_id === p.id))
+                        .map((profile) => (
+                          <CommandItem
+                            key={profile.id}
+                            value={profile.email}
+                            onSelect={() => {
+                              schoolAdminsField.append({
+                                profile_id: profile.id,
+                                profiles: { email: profile.email, first_name: profile.first_name, last_name: profile.last_name }
+                              });
+                              setOpenAdminsPopover(false);
+                            }}
+                          >
+                            <div className="flex flex-col">
+                              <span>{profile.email}</span>
+                              {(profile.first_name || profile.last_name) && (
+                                <span className="text-xs text-muted-foreground">
+                                  {profile.first_name} {profile.last_name}
+                                </span>
+                              )}
+                            </div>
+                          </CommandItem>
+                        ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+
+            <div className="grid gap-2">
+              {schoolAdminsField.fields.map((field, index) => (
+                <div key={field.id} className="flex items-center justify-between p-3 border rounded-md bg-slate-50">
+                  <div className="flex flex-col">
+                    <span className="font-medium">{field.profiles?.email}</span>
+                    {(field.profiles?.first_name || field.profiles?.last_name) && (
+                      <span className="text-xs text-muted-foreground">
+                        {field.profiles?.first_name} {field.profiles?.last_name}
+                      </span>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 h-8 px-2"
+                    onClick={() => schoolAdminsField.remove(index)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              {schoolAdminsField.fields.length === 0 && (
+                <p className="text-sm text-muted-foreground italic text-center p-4">No administrators added yet.</p>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-end gap-4 pb-12">

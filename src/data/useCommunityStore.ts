@@ -5,10 +5,11 @@ import { toast } from "sonner";
 export interface Post {
   id: string;
   author_id: string;
-  profiles?: { first_name: string; last_name: string; avatar_url: string | null; age: string | null; school_id: string | null; };
+  profiles?: { first_name: string; last_name: string; avatar_url: string | null; age: string | null; school_id: string | null; email?: string | null; };
   tag: string;
   time: string;
   body: string;
+  image_urls?: string[];
   likes: number;
   replies: number;
   school_id?: string;
@@ -21,7 +22,7 @@ export function useCommunityPosts(schoolId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("community_posts")
-        .select("*, profiles(first_name, last_name, avatar_url, age, school_id)")
+        .select("*, profiles(first_name, last_name, avatar_url, age, school_id, email)")
         .eq("school_id", schoolId)
         .order("created_at", { ascending: false });
 
@@ -97,7 +98,7 @@ export interface Reply {
   post_id: string;
   parent_id?: string | null;
   author_id: string;
-  profiles?: { first_name: string; last_name: string; avatar_url: string | null; age: string | null; school_id: string | null; };
+  profiles?: { first_name: string; last_name: string; avatar_url: string | null; age: string | null; school_id: string | null; email?: string | null; };
   body: string;
   created_at: string;
 }
@@ -108,7 +109,7 @@ export function useReplies(postId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("community_replies")
-        .select("*, profiles(first_name, last_name, avatar_url, age, school_id)")
+        .select("*, profiles(first_name, last_name, avatar_url, age, school_id, email)")
         .eq("post_id", postId)
         .order("created_at", { ascending: true });
 

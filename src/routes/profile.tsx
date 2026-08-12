@@ -30,6 +30,7 @@ function Profile() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [saving, setSaving] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -173,8 +174,13 @@ function Profile() {
   };
 
   const handleLogout = async () => {
-    await logout();
-    navigate({ to: "/login" });
+    setLoggingOut(true);
+    try {
+      await logout();
+      navigate({ to: "/login" });
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
 if (loading) {
@@ -561,9 +567,14 @@ if (loading) {
             variant="ghost"
             className="text-muted-foreground hover:text-destructive"
             onClick={handleLogout}
+            disabled={loggingOut}
           >
-            <LogOut className="mr-2 h-4 w-4" />
-            Log Out
+            {loggingOut ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <LogOut className="mr-2 h-4 w-4" />
+            )}
+            {loggingOut ? "Logging out..." : "Log Out"}
           </Button>
         </div>
       </div>

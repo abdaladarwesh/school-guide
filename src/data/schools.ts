@@ -22,6 +22,7 @@ export type School = {
   logo?: string;
   gallery?: string[];
   main_field_of_study?: string;
+  school_admins?: { profile_id: string; profiles?: { email: string; first_name?: string; last_name?: string; } }[];
 };
 
 export const schools: School[] = [
