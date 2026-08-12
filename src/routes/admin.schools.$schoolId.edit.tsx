@@ -34,7 +34,7 @@ function EditSchoolPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6 p-4 md:p-6 overflow-hidden">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
           Edit School: {school.name}

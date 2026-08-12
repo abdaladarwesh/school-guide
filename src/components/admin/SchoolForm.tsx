@@ -271,7 +271,7 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
         className="space-y-8"
       >
         {/* Basic Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 p-4 md:p-6 bg-white rounded-xl shadow-sm border border-slate-100">
           <div className="col-span-full">
             <h3 className="text-lg font-semibold border-b pb-2 mb-4">Basic Information</h3>
           </div>
@@ -550,7 +550,7 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
         </div>
 
         {/* Metrics & Partner Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 p-4 md:p-6 bg-white rounded-xl shadow-sm border border-slate-100">
           <div className="col-span-full">
             <h3 className="text-lg font-semibold border-b pb-2 mb-4">Metrics & Partner</h3>
           </div>
@@ -649,7 +649,7 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
         </div>
 
         {/* Specializations */}
-        <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+        <div className="p-4 md:p-6 bg-white rounded-xl shadow-sm border border-slate-100">
           <div className="flex justify-between items-center border-b pb-2 mb-4">
             <h3 className="text-lg font-semibold">Specializations</h3>
             <Button
@@ -712,7 +712,7 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
         </div>
 
         {/* Careers */}
-        <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+        <div className="p-4 md:p-6 bg-white rounded-xl shadow-sm border border-slate-100">
           <div className="flex justify-between items-center border-b pb-2 mb-4">
             <h3 className="text-lg font-semibold">Careers</h3>
             <Button
@@ -775,7 +775,7 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
         </div>
 
         {/* Admission */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 p-4 md:p-6 bg-white rounded-xl shadow-sm border border-slate-100">
           <div className="col-span-full">
             <h3 className="text-lg font-semibold border-b pb-2 mb-4">Admission Criteria</h3>
           </div>
@@ -834,7 +834,7 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
         </div>
 
         {/* Administrators */}
-        <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">
+        <div className="p-4 md:p-6 bg-white rounded-xl shadow-sm border border-slate-100">
           <div className="flex justify-between items-center border-b pb-2 mb-4">
             <h3 className="text-lg font-semibold">School Administrators</h3>
           </div>
@@ -847,7 +847,7 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
                   aria-expanded={openAdminsPopover}
                   className="w-full justify-between"
                 >
-                  Select a profile to add as admin...
+                  <span className="truncate">Select a profile to add as admin...</span>
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -871,8 +871,8 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
                               setOpenAdminsPopover(false);
                             }}
                           >
-                            <div className="flex flex-col">
-                              <span>{profile.email}</span>
+                            <div className="flex flex-col min-w-0 overflow-hidden">
+                              <span className="truncate">{profile.email}</span>
                               {(profile.first_name || profile.last_name) && (
                                 <span className="text-xs text-muted-foreground">
                                   {profile.first_name} {profile.last_name}
@@ -890,8 +890,8 @@ export function SchoolForm({ initialData, onSubmit, isLoading }: SchoolFormProps
             <div className="grid gap-2">
               {schoolAdminsField.fields.map((field, index) => (
                 <div key={field.id} className="flex items-center justify-between p-3 border rounded-md bg-slate-50">
-                  <div className="flex flex-col">
-                    <span className="font-medium">{field.profiles?.email}</span>
+                  <div className="flex flex-col min-w-0 flex-1 mr-2 overflow-hidden">
+                    <span className="font-medium truncate">{field.profiles?.email}</span>
                     {(field.profiles?.first_name || field.profiles?.last_name) && (
                       <span className="text-xs text-muted-foreground">
                         {field.profiles?.first_name} {field.profiles?.last_name}

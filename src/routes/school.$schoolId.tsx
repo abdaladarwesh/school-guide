@@ -982,7 +982,7 @@ function SchoolPage() {
     </div>
     
     <Dialog open={isEditing} onOpenChange={setIsEditing}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] md:max-w-4xl max-h-[90vh] overflow-y-auto p-4 md:p-6">
         <DialogHeader>
           <DialogTitle>Edit School Information</DialogTitle>
         </DialogHeader>
