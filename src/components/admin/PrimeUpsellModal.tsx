@@ -11,27 +11,27 @@ interface PrimeUpsellModalProps {
 export function PrimeUpsellModal({ open, onOpenChange, onUpgrade }: PrimeUpsellModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-2xl">
-        <div className="relative bg-slate-900 text-white overflow-hidden rounded-2xl">
+      <DialogContent className="w-[calc(100vw-1rem)] sm:w-[95vw] md:max-w-md p-0 overflow-x-hidden overflow-y-auto max-h-[90vh] border-0 bg-transparent shadow-2xl min-w-0">
+        <div className="relative bg-slate-900 text-white overflow-hidden rounded-2xl min-w-0">
           {/* Background Gradients & Effects */}
           <div className="absolute inset-0 bg-[linear-gradient(to_bottom_right,#1e1b4b,#0f172a)]" />
           <div className="absolute -top-32 -right-32 size-64 rounded-full bg-amber-500/20 blur-3xl opacity-70 animate-pulse" />
           <div className="absolute -bottom-32 -left-32 size-64 rounded-full bg-indigo-500/20 blur-3xl opacity-70" />
 
-          <div className="relative p-8 flex flex-col items-center text-center">
+          <div className="relative p-4 sm:p-8 flex flex-col items-center text-center min-w-0">
             {/* Header Icon */}
-            <div className="relative grid size-16 place-items-center rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-500 shadow-xl shadow-amber-500/30 mb-6">
+            <div className="relative grid size-16 place-items-center rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-500 shadow-xl shadow-amber-500/30 mb-6 shrink-0">
               <Crown className="size-8 text-white drop-shadow-md" />
               <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white">
                 <Sparkles className="size-2.5 text-amber-500" />
               </div>
             </div>
 
-            <h2 className="text-3xl font-display font-extrabold tracking-tight mb-3 text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-100 to-amber-300">
+            <h2 className="text-3xl font-display font-extrabold tracking-tight mb-3 text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-100 to-amber-300 break-words w-full">
               Upgrade to Prime
             </h2>
             
-            <p className="text-slate-300 text-sm leading-relaxed max-w-sm mx-auto mb-8">
+            <p className="text-slate-300 text-sm leading-relaxed max-w-sm mx-auto mb-8 break-words">
               Stand out to thousands of prospective students. Prime features give your school unmatched visibility and prestige on the platform.
             </p>
 
