@@ -9,14 +9,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="mx-auto flex min-h-screen w-full flex-col bg-background pb-24">
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-border bg-card/95 px-4 py-3 backdrop-blur">
-        <button aria-label="Menu" className="rounded-xl p-2 text-foreground/70 hover:bg-muted">
-          <Menu className="size-5" />
-        </button>
-        <Link to="/home" className="flex items-center gap-2">
-          <span className="grid size-7 place-items-center rounded-lg bg-[image:var(--gradient-warm)] text-sm">
-            🎓
-          </span>
+      <header className="sticky top-0 z-30 flex items-center justify-end gap-3 border-b border-border bg-card/95 px-4 py-3 backdrop-blur">
+        <Link to="/home" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
+          <img src="/favicon-96x96.png" alt="logo" className="size-6 rounded-full object-cover border-2 aspect-square border-[#ea7d35]" />
           <span className="font-display text-lg font-extrabold text-indigo">School Guide</span>
         </Link>
         <div className="flex items-center gap-2">
@@ -42,7 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-2">
               <Link
                 to="/profile"
-                className="rounded-full overflow-hidden border border-border hover:opacity-80 transition-opacity"
+                className="rounded-full aspect-square overflow-hidden border border-border hover:opacity-80 transition-opacity"
               >
                 <img
                   src={

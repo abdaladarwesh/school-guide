@@ -74,34 +74,34 @@
   --radius: 1.25rem;
 
   /* Brand palette */
-  --or: oklch(0.845 0.142 82.5);
-  --abricot: oklch(0.671 0.166 45.2);
-  --framboise: oklch(0.451 0.199 340.5);
-  --nuage: oklch(0.79 0.068 245.6);
-  --indigo: oklch(0.42 0.148 268.2);
-  --blush: oklch(0.851 0.069 340.2);
+  --or: oklch(0.82 0.16 85); /* Bright Accent Gold/Yellow */
+  --abricot: oklch(0.75 0.14 70); 
+  --framboise: oklch(0.45 0.20 340);
+  --nuage: oklch(0.96 0.01 260); /* Clean light gray/blue */
+  --indigo: oklch(0.35 0.12 260); /* Professional Deep Blue */
+  --blush: oklch(0.90 0.04 340);
 
-  --gradient-hero: linear-gradient(150deg, var(--indigo), var(--framboise) 70%, var(--abricot));
+  --gradient-hero: linear-gradient(150deg, var(--indigo) 0%, oklch(0.45 0.15 260) 100%);
   --gradient-warm: linear-gradient(135deg, var(--or), var(--abricot));
-  --gradient-soft: linear-gradient(135deg, var(--blush), var(--nuage));
-  --shadow-card: 0 12px 28px -14px color-mix(in oklab, var(--indigo) 40%, transparent);
-  --shadow-float: 0 18px 40px -16px color-mix(in oklab, var(--framboise) 35%, transparent);
+  --gradient-soft: linear-gradient(135deg, var(--nuage), oklch(0.99 0 0));
+  --shadow-card: 0 12px 28px -14px color-mix(in oklab, var(--indigo) 20%, transparent);
+  --shadow-float: 0 18px 40px -16px color-mix(in oklab, var(--indigo) 30%, transparent);
 
-  --background: oklch(0.989 0.008 85);
-  --foreground: oklch(0.24 0.05 275);
+  --background: oklch(0.99 0 0); /* Clean white */
+  --foreground: oklch(0.20 0.05 260); /* Dark blue/gray */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.24 0.05 275);
+  --card-foreground: oklch(0.20 0.05 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.24 0.05 275);
+  --popover-foreground: oklch(0.20 0.05 260);
   --primary: var(--indigo);
-  --primary-foreground: oklch(0.99 0.01 85);
-  --secondary: oklch(0.955 0.03 300);
-  --secondary-foreground: var(--framboise);
-  --muted: oklch(0.955 0.012 85);
-  --muted-foreground: oklch(0.53 0.03 275);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: var(--nuage);
+  --secondary-foreground: var(--indigo);
+  --muted: oklch(0.96 0.01 260);
+  --muted-foreground: oklch(0.55 0.03 260);
   --accent: var(--or);
-  --accent-foreground: oklch(0.28 0.06 60);
-  --destructive: oklch(0.577 0.245 27.325);
+  --accent-foreground: oklch(0.25 0.05 260);
+  --destructive: oklch(0.58 0.24 27);
   --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(0.912 0.018 280);
   --input: oklch(0.912 0.018 280);
