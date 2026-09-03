@@ -11,7 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { supabase, adminSupabase } from "@/lib/supabase";
 import { useUserStore } from "@/data/useUserStore";
-import { useSchoolsStore } from "@/data/useSchoolsStore";
+import { useOpportunitiesStore } from "@/data/useOpportunitiesStore";
 import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
@@ -152,7 +152,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const setSession = useUserStore((state) => state.setSession);
-  const fetchSchools = useSchoolsStore((state) => state.fetchSchools);
+  const fetchOpportunities = useOpportunitiesStore((state) => state.fetchOpportunities);
   const router = useRouter();
 
   useEffect(() => {
@@ -165,7 +165,7 @@ function RootComponent() {
   }, []);
 
   useEffect(() => {
-    fetchSchools();
+    fetchOpportunities();
 
     const setSession = useUserStore.getState().setSession;
     const setAdminSession = useUserStore.getState().setAdminSession;
@@ -175,20 +175,14 @@ function RootComponent() {
         const { data, error } = await supabase
           .from("profiles")
           .select(
-            "role, tier, is_subscribed, first_name, current_streak, points, unlocked_badges, school_id",
+            "role, first_name",
           )
           .eq("id", session.user.id)
           .single();
 
         if (!error && data) {
           setSession(session, data.role);
-          useUserStore.getState().setSubscribed(data.is_subscribed, data.tier);
-          useUserStore.getState().setUserData({
-            current_streak: data.current_streak,
-            points: data.points,
-            unlocked_badges: data.unlocked_badges,
-            school_id: data.school_id,
-          });
+          
           if (data.first_name) {
             useUserStore.getState().setOnboardingCompleted();
           } else {
@@ -205,7 +199,6 @@ function RootComponent() {
         }
       }
       setSession(session, null);
-      useUserStore.getState().setSubscribed(false, "none");
     };
 
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -248,7 +241,7 @@ function RootComponent() {
       subscription.unsubscribe();
       adminSubscription.unsubscribe();
     };
-  }, [fetchSchools]);
+  }, [fetchOpportunities]);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -14,14 +14,12 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as PrimeRouteImport } from './routes/prime'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as StreaksRouteImport } from './routes/streaks'
-import { Route as SchoolSchoolIdRouteImport } from './routes/school.$schoolId'
-import { Route as AdminSchoolsIndexRouteImport } from './routes/admin.schools.index'
-import { Route as AdminSchoolsNewRouteImport } from './routes/admin.schools.new'
-import { Route as AdminSchoolsSchoolIdEditRouteImport } from './routes/admin.schools.$schoolId.edit'
+import { Route as OpportunityOppIdRouteImport } from './routes/opportunity.$oppId'
+import { Route as AdminOpportunitiesIndexRouteImport } from './routes/admin.opportunities.index'
+import { Route as AdminOpportunitiesNewRouteImport } from './routes/admin.opportunities.new'
+import { Route as AdminOpportunitiesOppIdEditRouteImport } from './routes/admin.opportunities.$oppId.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -48,11 +46,6 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrimeRoute = PrimeRouteImport.update({
-  id: '/prime',
-  path: '/prime',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -63,30 +56,25 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StreaksRoute = StreaksRouteImport.update({
-  id: '/streaks',
-  path: '/streaks',
+const OpportunityOppIdRoute = OpportunityOppIdRouteImport.update({
+  id: '/opportunity/$oppId',
+  path: '/opportunity/$oppId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SchoolSchoolIdRoute = SchoolSchoolIdRouteImport.update({
-  id: '/school/$schoolId',
-  path: '/school/$schoolId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSchoolsIndexRoute = AdminSchoolsIndexRouteImport.update({
-  id: '/schools/',
-  path: '/schools/',
+const AdminOpportunitiesIndexRoute = AdminOpportunitiesIndexRouteImport.update({
+  id: '/opportunities/',
+  path: '/opportunities/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminSchoolsNewRoute = AdminSchoolsNewRouteImport.update({
-  id: '/schools/new',
-  path: '/schools/new',
+const AdminOpportunitiesNewRoute = AdminOpportunitiesNewRouteImport.update({
+  id: '/opportunities/new',
+  path: '/opportunities/new',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminSchoolsSchoolIdEditRoute =
-  AdminSchoolsSchoolIdEditRouteImport.update({
-    id: '/schools/$schoolId/edit',
-    path: '/schools/$schoolId/edit',
+const AdminOpportunitiesOppIdEditRoute =
+  AdminOpportunitiesOppIdEditRouteImport.update({
+    id: '/opportunities/$oppId/edit',
+    path: '/opportunities/$oppId/edit',
     getParentRoute: () => AdminRoute,
   } as any)
 
@@ -96,14 +84,12 @@ export interface FileRoutesByFullPath {
   '/admin-login': typeof AdminLoginRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/prime': typeof PrimeRoute
   '/profile': typeof ProfileRoute
   '/search': typeof SearchRoute
-  '/streaks': typeof StreaksRoute
-  '/school/$schoolId': typeof SchoolSchoolIdRoute
-  '/admin/schools/new': typeof AdminSchoolsNewRoute
-  '/admin/schools/': typeof AdminSchoolsIndexRoute
-  '/admin/schools/$schoolId/edit': typeof AdminSchoolsSchoolIdEditRoute
+  '/opportunity/$oppId': typeof OpportunityOppIdRoute
+  '/admin/opportunities/new': typeof AdminOpportunitiesNewRoute
+  '/admin/opportunities/': typeof AdminOpportunitiesIndexRoute
+  '/admin/opportunities/$oppId/edit': typeof AdminOpportunitiesOppIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -111,14 +97,12 @@ export interface FileRoutesByTo {
   '/admin-login': typeof AdminLoginRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/prime': typeof PrimeRoute
   '/profile': typeof ProfileRoute
   '/search': typeof SearchRoute
-  '/streaks': typeof StreaksRoute
-  '/school/$schoolId': typeof SchoolSchoolIdRoute
-  '/admin/schools/new': typeof AdminSchoolsNewRoute
-  '/admin/schools': typeof AdminSchoolsIndexRoute
-  '/admin/schools/$schoolId/edit': typeof AdminSchoolsSchoolIdEditRoute
+  '/opportunity/$oppId': typeof OpportunityOppIdRoute
+  '/admin/opportunities/new': typeof AdminOpportunitiesNewRoute
+  '/admin/opportunities': typeof AdminOpportunitiesIndexRoute
+  '/admin/opportunities/$oppId/edit': typeof AdminOpportunitiesOppIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -127,14 +111,12 @@ export interface FileRoutesById {
   '/admin-login': typeof AdminLoginRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/prime': typeof PrimeRoute
   '/profile': typeof ProfileRoute
   '/search': typeof SearchRoute
-  '/streaks': typeof StreaksRoute
-  '/school/$schoolId': typeof SchoolSchoolIdRoute
-  '/admin/schools/new': typeof AdminSchoolsNewRoute
-  '/admin/schools/': typeof AdminSchoolsIndexRoute
-  '/admin/schools/$schoolId/edit': typeof AdminSchoolsSchoolIdEditRoute
+  '/opportunity/$oppId': typeof OpportunityOppIdRoute
+  '/admin/opportunities/new': typeof AdminOpportunitiesNewRoute
+  '/admin/opportunities/': typeof AdminOpportunitiesIndexRoute
+  '/admin/opportunities/$oppId/edit': typeof AdminOpportunitiesOppIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -144,14 +126,12 @@ export interface FileRouteTypes {
     | '/admin-login'
     | '/home'
     | '/login'
-    | '/prime'
     | '/profile'
     | '/search'
-    | '/streaks'
-    | '/school/$schoolId'
-    | '/admin/schools/new'
-    | '/admin/schools/'
-    | '/admin/schools/$schoolId/edit'
+    | '/opportunity/$oppId'
+    | '/admin/opportunities/new'
+    | '/admin/opportunities/'
+    | '/admin/opportunities/$oppId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -159,14 +139,12 @@ export interface FileRouteTypes {
     | '/admin-login'
     | '/home'
     | '/login'
-    | '/prime'
     | '/profile'
     | '/search'
-    | '/streaks'
-    | '/school/$schoolId'
-    | '/admin/schools/new'
-    | '/admin/schools'
-    | '/admin/schools/$schoolId/edit'
+    | '/opportunity/$oppId'
+    | '/admin/opportunities/new'
+    | '/admin/opportunities'
+    | '/admin/opportunities/$oppId/edit'
   id:
     | '__root__'
     | '/'
@@ -174,14 +152,12 @@ export interface FileRouteTypes {
     | '/admin-login'
     | '/home'
     | '/login'
-    | '/prime'
     | '/profile'
     | '/search'
-    | '/streaks'
-    | '/school/$schoolId'
-    | '/admin/schools/new'
-    | '/admin/schools/'
-    | '/admin/schools/$schoolId/edit'
+    | '/opportunity/$oppId'
+    | '/admin/opportunities/new'
+    | '/admin/opportunities/'
+    | '/admin/opportunities/$oppId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -190,11 +166,9 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
-  PrimeRoute: typeof PrimeRoute
   ProfileRoute: typeof ProfileRoute
   SearchRoute: typeof SearchRoute
-  StreaksRoute: typeof StreaksRoute
-  SchoolSchoolIdRoute: typeof SchoolSchoolIdRoute
+  OpportunityOppIdRoute: typeof OpportunityOppIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -234,13 +208,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/prime': {
-      id: '/prime'
-      path: '/prime'
-      fullPath: '/prime'
-      preLoaderRoute: typeof PrimeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -255,54 +222,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/streaks': {
-      id: '/streaks'
-      path: '/streaks'
-      fullPath: '/streaks'
-      preLoaderRoute: typeof StreaksRouteImport
+    '/opportunity/$oppId': {
+      id: '/opportunity/$oppId'
+      path: '/opportunity/$oppId'
+      fullPath: '/opportunity/$oppId'
+      preLoaderRoute: typeof OpportunityOppIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/school/$schoolId': {
-      id: '/school/$schoolId'
-      path: '/school/$schoolId'
-      fullPath: '/school/$schoolId'
-      preLoaderRoute: typeof SchoolSchoolIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/schools/': {
-      id: '/admin/schools/'
-      path: '/schools'
-      fullPath: '/admin/schools/'
-      preLoaderRoute: typeof AdminSchoolsIndexRouteImport
+    '/admin/opportunities/': {
+      id: '/admin/opportunities/'
+      path: '/opportunities'
+      fullPath: '/admin/opportunities/'
+      preLoaderRoute: typeof AdminOpportunitiesIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/schools/new': {
-      id: '/admin/schools/new'
-      path: '/schools/new'
-      fullPath: '/admin/schools/new'
-      preLoaderRoute: typeof AdminSchoolsNewRouteImport
+    '/admin/opportunities/new': {
+      id: '/admin/opportunities/new'
+      path: '/opportunities/new'
+      fullPath: '/admin/opportunities/new'
+      preLoaderRoute: typeof AdminOpportunitiesNewRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/schools/$schoolId/edit': {
-      id: '/admin/schools/$schoolId/edit'
-      path: '/schools/$schoolId/edit'
-      fullPath: '/admin/schools/$schoolId/edit'
-      preLoaderRoute: typeof AdminSchoolsSchoolIdEditRouteImport
+    '/admin/opportunities/$oppId/edit': {
+      id: '/admin/opportunities/$oppId/edit'
+      path: '/opportunities/$oppId/edit'
+      fullPath: '/admin/opportunities/$oppId/edit'
+      preLoaderRoute: typeof AdminOpportunitiesOppIdEditRouteImport
       parentRoute: typeof AdminRoute
     }
   }
 }
 
 interface AdminRouteChildren {
-  AdminSchoolsNewRoute: typeof AdminSchoolsNewRoute
-  AdminSchoolsIndexRoute: typeof AdminSchoolsIndexRoute
-  AdminSchoolsSchoolIdEditRoute: typeof AdminSchoolsSchoolIdEditRoute
+  AdminOpportunitiesNewRoute: typeof AdminOpportunitiesNewRoute
+  AdminOpportunitiesIndexRoute: typeof AdminOpportunitiesIndexRoute
+  AdminOpportunitiesOppIdEditRoute: typeof AdminOpportunitiesOppIdEditRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminSchoolsNewRoute: AdminSchoolsNewRoute,
-  AdminSchoolsIndexRoute: AdminSchoolsIndexRoute,
-  AdminSchoolsSchoolIdEditRoute: AdminSchoolsSchoolIdEditRoute,
+  AdminOpportunitiesNewRoute: AdminOpportunitiesNewRoute,
+  AdminOpportunitiesIndexRoute: AdminOpportunitiesIndexRoute,
+  AdminOpportunitiesOppIdEditRoute: AdminOpportunitiesOppIdEditRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -313,11 +273,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
-  PrimeRoute: PrimeRoute,
   ProfileRoute: ProfileRoute,
   SearchRoute: SearchRoute,
-  StreaksRoute: StreaksRoute,
-  SchoolSchoolIdRoute: SchoolSchoolIdRoute,
+  OpportunityOppIdRoute: OpportunityOppIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

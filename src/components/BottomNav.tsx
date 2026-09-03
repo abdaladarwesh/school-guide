@@ -2,10 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { Home, Search, Users, Flame, Crown } from "lucide-react";
 
 const items = [
-  { to: "/home", label: "Home", icon: Home },
+  { to: "/home", label: "Dashboard", icon: Home },
   { to: "/search", label: "Search", icon: Search },
-  { to: "/streaks", label: "Streaks", icon: Flame },
-  { to: "/prime", label: "Prime", icon: Crown },
+  { to: "/profile", label: "Profile", icon: Users },
 ] as const;
 
 export function BottomNav() {

@@ -4,56 +4,45 @@ import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
 
 interface UserState {
-  isSubscribed: boolean;
-  tier: "none" | "plus" | "max";
   session: Session | null;
   role: "student" | "admin" | null;
   adminSession: Session | null;
   adminRole: "student" | "admin" | null;
   hasCompletedOnboarding: boolean;
-  currentStreak: number;
-  points: number;
-  unlockedBadges: string[];
-  schoolId: string | null;
-  setSubscribed: (val: boolean, tier?: "none" | "plus" | "max") => void;
+  savedOpportunities: string[];
   setSession: (session: Session | null, role?: "student" | "admin" | null) => void;
   setAdminSession: (session: Session | null, role?: "student" | "admin" | null) => void;
-  setUserData: (data: {
-    current_streak?: number;
-    points?: number;
-    unlocked_badges?: string[];
-    school_id?: string | null;
-  }) => void;
+  setUserData: (data: any) => void;
   setOnboardingCompleted: () => void;
+  toggleSavedOpportunity: (oppId: string) => void;
   logout: () => Promise<void>;
   adminLogout: () => Promise<void>;
 }
 
 export const useUserStore = create<UserState>()(
   persist(
-    (set) => ({
-      isSubscribed: false,
-      tier: "none",
+    (set, get) => ({
       session: null,
       role: null,
       adminSession: null,
       adminRole: null,
       hasCompletedOnboarding: false,
-      currentStreak: 0,
-      points: 0,
-      unlockedBadges: [],
-      schoolId: null,
-      setSubscribed: (val, tier = "none") => set({ isSubscribed: val, tier }),
+      savedOpportunities: [],
       setSession: (session, role = null) => set({ session, role }),
       setAdminSession: (adminSession, adminRole = null) => set({ adminSession, adminRole }),
       setUserData: (data) =>
         set((state) => ({
-          currentStreak: data.current_streak ?? state.currentStreak,
-          points: data.points ?? state.points,
-          unlockedBadges: data.unlocked_badges ?? state.unlockedBadges,
-          schoolId: data.school_id !== undefined ? data.school_id : state.schoolId,
+          // We can sync other backend profile data here if needed
         })),
       setOnboardingCompleted: () => set({ hasCompletedOnboarding: true }),
+      toggleSavedOpportunity: (oppId) => {
+        const current = get().savedOpportunities;
+        if (current.includes(oppId)) {
+          set({ savedOpportunities: current.filter(id => id !== oppId) });
+        } else {
+          set({ savedOpportunities: [...current, oppId] });
+        }
+      },
       logout: async () => {
         const { supabase } = await import("@/lib/supabase");
         await supabase.auth.signOut();

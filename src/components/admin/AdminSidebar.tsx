@@ -17,18 +17,18 @@ export function AdminSidebar() {
       </div>
       <nav className="px-4 pb-4 md:pb-0 flex overflow-x-auto gap-2 md:flex-col md:space-y-2 md:flex-1 scrollbar-hide">
         <Link
-          to="/admin/schools"
+          to="/admin/opportunities"
           className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 transition-colors whitespace-nowrap [&.active]:bg-slate-800 [&.active]:text-blue-400"
         >
           <School className="w-5 h-5" />
-          Schools
+          Opportunities
         </Link>
         <Link
-          to="/admin/schools/new"
+          to="/admin/opportunities/new"
           className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 transition-colors whitespace-nowrap [&.active]:bg-slate-800 [&.active]:text-blue-400"
         >
           <Plus className="w-5 h-5" />
-          Add School
+          Add Opportunity
         </Link>
       </nav>
       <div className="p-4 border-t border-slate-800 hidden md:block mt-auto">
